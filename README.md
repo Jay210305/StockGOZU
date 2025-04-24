@@ -1,3 +1,3 @@
 # StockGOZU
->[! NOTE]
+>[!NOTE]
 >Módulo de Inventario
