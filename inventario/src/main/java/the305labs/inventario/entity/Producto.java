@@ -6,24 +6,29 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "producto")
 public class Producto {
+    public enum Unidad { kg, litro, unidad, metro, caja, otro }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
     private String descripcion;
-
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String codigo;
-
     private String categoria;
-    private String unidadMedida;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "unidad_medida", nullable = false)
+    private Unidad unidadMedida = Unidad.unidad;
     private Double precioCompra;
     private Double precioVenta;
-    private Integer stockMinimo;
 
-    @Column(name = "creado_en")
-    private LocalDateTime creadoEn = LocalDateTime.now();
+    @Column(name = "actualizado_en")
+    private LocalDateTime actualizadoEn;
+
+    @PrePersist @PreUpdate
+    public void setTimestamp() {
+        actualizadoEn = LocalDateTime.now();
+    }
 
     public Long getId() {
         return id;
@@ -65,11 +70,11 @@ public class Producto {
         this.categoria = categoria;
     }
 
-    public String getUnidadMedida() {
+    public Unidad getUnidadMedida() {
         return unidadMedida;
     }
 
-    public void setUnidadMedida(String unidadMedida) {
+    public void setUnidadMedida(Unidad unidadMedida) {
         this.unidadMedida = unidadMedida;
     }
 
@@ -89,19 +94,11 @@ public class Producto {
         this.precioVenta = precioVenta;
     }
 
-    public Integer getStockMinimo() {
-        return stockMinimo;
+    public LocalDateTime getActualizadoEn() {
+        return actualizadoEn;
     }
 
-    public void setStockMinimo(Integer stockMinimo) {
-        this.stockMinimo = stockMinimo;
-    }
-
-    public LocalDateTime getCreadoEn() {
-        return creadoEn;
-    }
-
-    public void setCreadoEn(LocalDateTime creadoEn) {
-        this.creadoEn = creadoEn;
+    public void setActualizadoEn(LocalDateTime actualizadoEn) {
+        this.actualizadoEn = actualizadoEn;
     }
 }

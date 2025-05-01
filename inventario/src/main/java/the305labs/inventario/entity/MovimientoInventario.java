@@ -1,27 +1,32 @@
 package the305labs.inventario.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "movimiento_inventario")
 public class MovimientoInventario {
+    public enum Tipo {INGRESO, SALIDA}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Integer sucursalId;
     private Long productoId;
     private Integer usuarioId;
-
     @Enumerated(EnumType.STRING)
-    private Tipo tipo; // INGRESO, SALIDA
-
+    private Tipo tipo;
     private Integer cantidad;
-    private LocalDateTime fecha = LocalDateTime.now();
+    private Double precioCompra;
+    private Double precioVenta;
+    private LocalDateTime fecha;
     private String comentario;
 
-    public enum Tipo { INGRESO, SALIDA }
+    @PrePersist
+    public void prePersist() {
+        fecha = LocalDateTime.now();
+    }
 
     public Long getId() {
         return id;
@@ -71,6 +76,22 @@ public class MovimientoInventario {
         this.cantidad = cantidad;
     }
 
+    public Double getPrecioCompra() {
+        return precioCompra;
+    }
+
+    public void setPrecioCompra(Double precioCompra) {
+        this.precioCompra = precioCompra;
+    }
+
+    public Double getPrecioVenta() {
+        return precioVenta;
+    }
+
+    public void setPrecioVenta(Double precioVenta) {
+        this.precioVenta = precioVenta;
+    }
+
     public LocalDateTime getFecha() {
         return fecha;
     }
@@ -86,4 +107,6 @@ public class MovimientoInventario {
     public void setComentario(String comentario) {
         this.comentario = comentario;
     }
+
+    // getters y setters...
 }

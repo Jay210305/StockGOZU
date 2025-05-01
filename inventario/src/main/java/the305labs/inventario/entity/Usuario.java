@@ -1,6 +1,7 @@
 package the305labs.inventario.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,7 +23,7 @@ public class Usuario {
     @Column(name = "creado_en")
     private LocalDateTime creadoEn = LocalDateTime.now();
 
-    public enum Rol { ADMIN, OPERADOR }
+    public enum Rol {ADMIN, OPERADOR}
 
     public Integer getId() {
         return id;

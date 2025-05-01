@@ -1,6 +1,7 @@
 package the305labs.inventario.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
