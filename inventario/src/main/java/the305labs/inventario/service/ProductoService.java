@@ -29,6 +29,7 @@ public class ProductoService {
 
     public Producto crear(Producto p) {
         Producto productoGuardado = repo.save(p);
+        // registra stock en tabla inventario
         if (p.getStockInicial() > 0) {
             Inventario inventario = new Inventario();
             inventario.setSucursalId(1);
