@@ -1,9 +1,10 @@
 -- Crear la base de datos si no existe
+-- SOURCE c:\Users\User\Documents\GitHub\StockGOZU\inventario\src\test\java\datos.sql
 DROP DATABASE IF EXISTS inventario_db;
 CREATE DATABASE inventario_db;
 USE inventario_db;
-CREATE DATABASE IF NOT EXISTS inventario_db;
-USE inventario_db;
+-- CREATE DATABASE IF NOT EXISTS inventario_db;
+-- USE inventario_db;
 
 -- Crear tabla `sucursal`
 CREATE TABLE IF NOT EXISTS sucursal (
