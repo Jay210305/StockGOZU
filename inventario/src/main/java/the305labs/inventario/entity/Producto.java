@@ -22,17 +22,6 @@ public class Producto {
     private Double precioCompra;
     private Double precioVenta;
 
-    @Transient
-    private Integer stockInicial = 0;
-    
-    public Integer getStockInicial() {
-        return stockInicial;
-    }
-
-    public void setStockInicial(Integer stockInicial) {
-        this.stockInicial = stockInicial;
-    }
-
     @Column(name = "actualizado_en")
     private LocalDateTime actualizadoEn;
 
