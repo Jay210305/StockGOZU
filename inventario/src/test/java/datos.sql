@@ -1,4 +1,7 @@
 -- Crear la base de datos si no existe
+DROP DATABASE IF EXISTS inventario_db;
+CREATE DATABASE inventario_db;
+USE inventario_db;
 CREATE DATABASE IF NOT EXISTS inventario_db;
 USE inventario_db;
 
@@ -75,23 +78,50 @@ CREATE TABLE IF NOT EXISTS movimiento_inventario (
 -- Insertar datos en `sucursal`
 INSERT INTO sucursal (id, nombre, ubicacion) VALUES (1, 'Sucursal Central', 'Ciudad Principal');
 INSERT INTO sucursal (id, nombre, ubicacion) VALUES (2, 'Sucursal Norte', 'Ciudad Norte');
+INSERT INTO sucursal (id, nombre, ubicacion) VALUES (3, 'Sucursal Sur', 'Ciudad Sur');
+INSERT INTO sucursal (id, nombre, ubicacion) VALUES (4, 'Sucursal Este', 'Ciudad Este');
+INSERT INTO sucursal (id, nombre, ubicacion) VALUES (5, 'Sucursal Oeste', 'Ciudad Oeste');
 
 -- Insertar datos en `producto`
 INSERT INTO producto (id, nombre, descripcion, codigo, categoria, unidad_medida, precio_compra, precio_venta) 
-VALUES (1, 'Producto A', 'Descripción A', 'PROD001', 'Categoría 1', 'unidad', 10.0, 15.0);
-INSERT INTO producto (id, nombre, descripcion, codigo, categoria, unidad_medida, precio_compra, precio_venta) 
-VALUES (2, 'Producto B', 'Descripción B', 'PROD002', 'Categoría 2', 'kg', 20.0, 30.0);
+VALUES 
+(1, 'Producto A', 'Descripción A', 'PROD001', 'Categoría 1', 'unidad', 10.0, 15.0),
+(2, 'Producto B', 'Descripción B', 'PROD002', 'Categoría 2', 'kg', 20.0, 30.0),
+(3, 'Producto C', 'Descripción C', 'PROD003', 'Categoría 3', 'litro', 5.0, 8.0),
+(4, 'Producto D', 'Descripción D', 'PROD004', 'Categoría 1', 'metro', 12.0, 18.0),
+(5, 'Producto E', 'Descripción E', 'PROD005', 'Categoría 2', 'caja', 25.0, 40.0),
+(6, 'Producto F', 'Descripción F', 'PROD006', 'Categoría 3', 'otro', 8.5, 13.5),
+(7, 'Producto G', 'Descripción G', 'PROD007', 'Categoría 1', 'unidad', 3.0, 5.0),
+(8, 'Producto H', 'Descripción H', 'PROD008', 'Categoría 2', 'kg', 18.0, 27.0);
 
 -- Insertar datos en `inventario`
-INSERT INTO inventario (sucursal_id, producto_id, cantidad, stock_minimo) VALUES (1, 1, 100, 10);
-INSERT INTO inventario (sucursal_id, producto_id, cantidad, stock_minimo) VALUES (2, 2, 50, 5);
+INSERT INTO inventario (sucursal_id, producto_id, cantidad, stock_minimo) 
+VALUES 
+(1, 1, 100, 10),
+(2, 2, 50, 5),
+(1, 3, 60, 5),
+(2, 4, 40, 10),
+(3, 5, 70, 15),
+(4, 6, 20, 5),
+(5, 7, 90, 10),
+(1, 8, 55, 7);
 
 -- Insertar datos en `usuario`
-INSERT INTO usuario (id, nombre, username, password_hash, rol) VALUES (1, 'Admin', 'admin', 'hashed_password', 'ADMIN');
-INSERT INTO usuario (id, nombre, username, password_hash, rol) VALUES (2, 'Operador', 'operador', 'hashed_password', 'OPERADOR');
+INSERT INTO usuario (id, nombre, username, password_hash, rol) 
+VALUES 
+(1, 'Admin', 'admin', 'hashed_password', 'ADMIN'),
+(2, 'Operador', 'operador', 'hashed_password', 'OPERADOR'),
+(3, 'Carlos Pérez', 'cperez', 'hashed_password', 'OPERADOR'),
+(4, 'Laura Gómez', 'lgomez', 'hashed_password', 'OPERADOR'),
+(5, 'Marta Ruiz', 'mruiz', 'hashed_password', 'ADMIN');
 
 -- Insertar datos en `movimiento_inventario`
 INSERT INTO movimiento_inventario (sucursal_id, producto_id, usuario_id, tipo, cantidad, precio_compra, precio_venta, comentario) 
-VALUES (1, 1, 1, 'INGRESO', 50, 10.0, 15.0, 'Ingreso inicial');
-INSERT INTO movimiento_inventario (sucursal_id, producto_id, usuario_id, tipo, cantidad, precio_compra, precio_venta, comentario) 
-VALUES (2, 2, 2, 'SALIDA', 10, 20.0, 30.0, 'Venta inicial');
+VALUES (1, 1, 1, 'INGRESO', 50, 10.0, 15.0, 'Ingreso inicial'),
+(2, 2, 2, 'SALIDA', 10, 20.0, 30.0, 'Venta inicial'),
+(3, 5, 3, 'INGRESO', 70, 25.0, 40.0, 'Nuevo ingreso producto E'),
+(4, 6, 4, 'INGRESO', 20, 8.5, 13.5, 'Reabastecimiento producto F'),
+(5, 7, 5, 'INGRESO', 90, 3.0, 5.0, 'Ingreso masivo producto G'),
+(1, 8, 1, 'SALIDA', 10, 18.0, 27.0, 'Venta producto H'),
+(2, 3, 2, 'SALIDA', 15, 5.0, 8.0, 'Consumo interno producto C'),
+(3, 4, 3, 'SALIDA', 5, 12.0, 18.0, 'Devolución producto D');
