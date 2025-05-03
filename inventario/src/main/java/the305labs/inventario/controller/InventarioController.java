@@ -1,5 +1,6 @@
 package the305labs.inventario.controller;
 
+import jakarta.validation.constraints.Min;
 import the305labs.inventario.entity.Inventario;
 import the305labs.inventario.entity.MovimientoInventario;
 import the305labs.inventario.service.InventarioService;
@@ -32,8 +33,7 @@ public class InventarioController {
     }
 
     @GetMapping("/alertas")
-    public List<Inventario> alertasStock(@RequestParam(defaultValue = "0") Integer umbral) {
-        // Filtrar inventario con cantidad <= umbral
+    public List<Inventario> alertasStock(@RequestParam @Min(0) Integer umbral) {
         return service.listarAlertas(umbral);
     }
 }
