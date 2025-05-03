@@ -29,6 +29,10 @@ public class InventarioService {
         return saved;
     }
 
+    public List<Inventario> listarInventarioPorSucursal(Integer sucursalId) {
+        return invRepo.findBySucursalId(sucursalId);
+    }
+
     public Inventario consultarStock(Integer sucursalId, Long productoId) {
         InventarioPK pk = new InventarioPK(sucursalId, productoId);
         return invRepo.findById(pk).orElseGet(() -> {

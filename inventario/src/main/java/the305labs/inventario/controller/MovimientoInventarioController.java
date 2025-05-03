@@ -16,12 +16,10 @@ public class MovimientoInventarioController {
         this.service = service;
     }
 
-    @GetMapping("/{productoId}")
+    @GetMapping("/{productoId}") //http://localhost:8081/api/movimientos/1
     public ResponseEntity<List<MovimientoInventario>> obtenerMovimientosPorProducto(
             @PathVariable Long productoId,
             @RequestParam(required = false) Integer sucursalId) {
-                
-        //obtiene movimts del servicio
         List<MovimientoInventario> movimientos = service.obtenerMovimientosPorProducto(productoId, sucursalId);
         return ResponseEntity.ok(movimientos);
     }

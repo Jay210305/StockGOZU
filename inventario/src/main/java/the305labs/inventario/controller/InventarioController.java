@@ -24,6 +24,12 @@ public class InventarioController {
         return ResponseEntity.ok(inv);
     }
 
+    @GetMapping("/sucursal/{sucursalId}")//rf6 http://localhost:8081/api/inventario/sucursal/1
+    public ResponseEntity<List<Inventario>> listarInventarioPorSucursal(@PathVariable Integer sucursalId) {
+        List<Inventario> inventario = service.listarInventarioPorSucursal(sucursalId);
+        return ResponseEntity.ok(inventario);
+    }
+
     @PostMapping("/movimiento")
     public ResponseEntity<MovimientoInventario> registrarMovimiento(
             @RequestBody MovimientoInventario movimiento) {
