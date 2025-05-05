@@ -6,6 +6,14 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "producto")
 public class Producto {
+    public LocalDateTime getCreadoEn() {
+        return creadoEn;
+    }
+
+    public void setCreadoEn(LocalDateTime creadoEn) {
+        this.creadoEn = creadoEn;
+    }
+
     public enum Unidad { kg, litro, unidad, metro, caja, otro }
 
     @Id
@@ -21,6 +29,9 @@ public class Producto {
     private Unidad unidadMedida = Unidad.unidad;
     private Double precioCompra;
     private Double precioVenta;
+
+    @Column(name = "creado_en")
+    private LocalDateTime creadoEn;
 
     @Column(name = "actualizado_en")
     private LocalDateTime actualizadoEn;
@@ -93,6 +104,8 @@ public class Producto {
     public void setPrecioVenta(Double precioVenta) {
         this.precioVenta = precioVenta;
     }
+
+
 
     public LocalDateTime getActualizadoEn() {
         return actualizadoEn;

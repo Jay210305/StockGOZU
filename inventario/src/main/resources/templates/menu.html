@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Menú Principal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        ul.menu {
+            list-style-type: none;
+            padding: 0;
+            max-width: 400px;
+            margin: 40px auto;
+        }
+
+        ul.menu li {
+            background-color: #007BFF;
+            margin: 10px 0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        ul.menu li:hover {
+            background-color: #0056b3;
+        }
+
+        ul.menu li a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<h1>Menú de Navegación</h1>
+<ul class="menu">
+    <li th:each="item : ${menuItems}">
+        <a th:href="@{${item.path}}" th:text="${item.label}"></a>
+    </li>
+</ul>
+</body>
+</html>

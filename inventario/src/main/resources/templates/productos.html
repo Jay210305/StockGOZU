@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+  <html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8">
+    <title>Productos</title>
+    <style>
+      table {
+          border-collapse: collapse;
+          width: 80%;
+          margin: 20px auto;
+      }
+
+      th, td {
+          border: 1px solid #aaa;
+          padding: 8px;
+          text-align: center;
+      }
+
+      th {
+          background-color: #ddd;
+      }
+
+      .button-container {
+          text-align: center;
+          margin-top: 20px;
+      }
+
+      .button-container button {
+          margin: 5px;
+          padding: 10px 20px;
+          background-color: #007BFF;
+          color: white;
+          border: none;
+          cursor: pointer;
+      }
+
+      .button-container button:hover {
+          background-color: #0056b3;
+      }
+
+      .form-container {
+          text-align: center;
+          margin-top: 20px;
+      }
+
+      input[type="text"], input[type="number"], select {
+          padding: 8px;
+          margin: 5px;
+          width: 200px;
+      }
+
+      /* Estilos del Popup */
+      .popup {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.5);
+          justify-content: center;
+          align-items: center;
+          z-index: 999;
+      }
+
+      .popup-content {
+          background-color: white;
+          padding: 20px;
+          border-radius: 8px;
+          width: 300px;
+      }
+
+      .popup button {
+          margin-top: 10px;
+          padding: 10px;
+          background-color: #28a745;
+          color: white;
+          border: none;
+          cursor: pointer;
+      }
+
+      .popup button.cancel {
+          background-color: #dc3545;
+      }
+
+      .popup button:hover {
+          background-color: #218838;
+      }
+
+      .popup button.cancel:hover {
+          background-color: #c82333;
+      }
+    </style>
+  </head>
+  <body>
+  <h1 style="text-align: center;">Listado de Productos</h1>
+
+  <div class="button-container">
+    <button onclick="openPopup()">Añadir Producto</button>
+  </div>
+
+  <table id="productos-table">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Descripción</th>
+      <th>Código</th>
+      <th>Categoría</th>
+      <th>Unidad</th>
+      <th>Precio Compra</th>
+      <th>Precio Venta</th>
+      <th>Fecha Creación</th>
+      <th>Fecha Actualización</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Popup para agregar producto -->
+  <div class="popup" id="popupForm">
+    <div class="popup-content">
+      <h3>Agregar Producto</h3>
+      <input type="text" id="nombre" placeholder="Nombre del producto" />
+      <input type="text" id="descripcion" placeholder="Descripción" />
+      <input type="text" id="codigo" placeholder="Código" />
+      <input type="text" id="categoria" placeholder="Categoría" />
+      <select id="unidad_medida">
+        <option value="kg">kg</option>
+        <option value="litro">litro</option>
+        <option value="unidad">unidad</option>
+        <option value="metro">metro</option>
+        <option value="caja">caja</option>
+        <option value="otro">otro</option>
+      </select>
+      <input type="number" id="precioCompra" placeholder="Precio de Compra" />
+      <input type="number" id="precioVenta" placeholder="Precio de Venta" />
+      <button onclick="addProduct()">Añadir Producto</button>
+      <button class="cancel" onclick="closePopup()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Popup para editar producto -->
+  <div class="popup" id="editPopupForm">
+    <div class="popup-content">
+      <h3>Editar Producto</h3>
+      <input type="hidden" id="editId" />
+      <input type="text" id="editNombre" placeholder="Nombre del producto" />
+      <input type="text" id="editDescripcion" placeholder="Descripción" />
+      <input type="text" id="editCodigo" placeholder="Código" />
+      <input type="text" id="editCategoria" placeholder="Categoría" />
+      <select id="editUnidadMedida">
+        <option value="kg">kg</option>
+        <option value="litro">litro</option>
+        <option value="unidad">unidad</option>
+        <option value="metro">metro</option>
+        <option value="caja">caja</option>
+        <option value="otro">otro</option>
+      </select>
+      <input type="number" id="editPrecioCompra" placeholder="Precio de Compra" />
+      <input type="number" id="editPrecioVenta" placeholder="Precio de Venta" />
+      <button onclick="saveEdit()">Guardar Cambios</button>
+      <button class="cancel" onclick="closeEditPopup()">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="button-container">
+    <a href="/menu"><button>Volver al menú</button></a>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("/api/productos")
+            .then(response => response.json())
+            .then(productos => {
+                const tbody = document.querySelector("#productos-table tbody");
+                productos.forEach(producto => {
+                    const fila = document.createElement("tr");
+                    fila.innerHTML = `
+                        <td>${producto.id}</td>
+                        <td>${producto.nombre}</td>
+                        <td>${producto.descripcion}</td>
+                        <td>${producto.codigo}</td>
+                        <td>${producto.categoria}</td>
+                        <td>${producto.unidadMedida}</td>
+                        <td>${producto.precioCompra}</td>
+                        <td>${producto.precioVenta}</td>
+                        <td>${producto.creadoEn}</td>
+                        <td>${producto.actualizadoEn}</td>
+                        <td>
+                            <button onclick="editProduct(${producto.id})">Editar</button>
+                            <button onclick="deleteProduct(${producto.id})">Eliminar</button>
+                        </td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    });
+
+    function openPopup() {
+        document.getElementById('popupForm').style.display = 'flex';
+    }
+
+    function closePopup() {
+        document.getElementById('popupForm').style.display = 'none';
+    }
+
+    function addProduct() {
+        const nombre = document.getElementById('nombre').value;
+        const descripcion = document.getElementById('descripcion').value;
+        const codigo = document.getElementById('codigo').value;
+        const categoria = document.getElementById('categoria').value;
+        const unidad_medida = document.getElementById('unidad_medida').value;
+        const precioCompra = parseFloat(document.getElementById('precioCompra').value);
+        const precioVenta = parseFloat(document.getElementById('precioVenta').value);
+
+        if (!nombre || !descripcion || !codigo || !categoria || isNaN(precioCompra) || isNaN(precioVenta)) {
+            alert("Por favor, rellena todos los campos.");
+            return;
+        }
+
+        fetch("/api/productos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, descripcion, codigo, categoria, unidadMedida: unidad_medida, precioCompra, precioVenta })
+        })
+        .then(response => response.json())
+        .then(() => {
+            alert("Producto añadido exitosamente!");
+            location.reload();
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+
+        closePopup();
+    }
+
+    function deleteProduct(id) {
+        if (confirm(`¿Estás seguro de que quieres eliminar el producto con ID ${id}?`)) {
+            fetch(`/api/productos/${id}`, { method: "DELETE" })
+                .then(response => {
+                    if (!response.ok) throw new Error("Error al eliminar producto");
+                    alert("Producto eliminado exitosamente!");
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        }
+    }
+
+    function editProduct(id) {
+        fetch(`/api/productos/${id}`)
+            .then(response => response.json())
+            .then(producto => {
+                document.getElementById('editId').value = producto.id;
+                document.getElementById('editNombre').value = producto.nombre;
+                document.getElementById('editDescripcion').value = producto.descripcion;
+                document.getElementById('editCodigo').value = producto.codigo;
+                document.getElementById('editCategoria').value = producto.categoria;
+                document.getElementById('editUnidadMedida').value = producto.unidadMedida;
+                document.getElementById('editPrecioCompra').value = producto.precioCompra;
+                document.getElementById('editPrecioVenta').value = producto.precioVenta;
+                document.getElementById('editPopupForm').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error("Error al obtener producto:", error);
+                alert("No se pudo cargar el producto.");
+            });
+    }
+
+    function closeEditPopup() {
+        document.getElementById('editPopupForm').style.display = 'none';
+    }
+
+    function saveEdit() {
+        const id = document.getElementById('editId').value;
+        const nombre = document.getElementById('editNombre').value;
+        const descripcion = document.getElementById('editDescripcion').value;
+        const codigo = document.getElementById('editCodigo').value;
+        const categoria = document.getElementById('editCategoria').value;
+        const unidadMedida = document.getElementById('editUnidadMedida').value;
+        const precioCompra = parseFloat(document.getElementById('editPrecioCompra').value);
+        const precioVenta = parseFloat(document.getElementById('editPrecioVenta').value);
+
+        fetch(`/api/productos/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nombre, descripcion, codigo, categoria, unidadMedida, precioCompra, precioVenta })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Error al actualizar producto");
+            alert("Producto actualizado correctamente.");
+            location.reload();
+        })
+        .catch(error => {
+            console.error("Error al actualizar:", error);
+            alert("Error al actualizar producto.");
+        });
+
+        closeEditPopup();
+    }
+  </script>
+
+  </body>
+  </html>
