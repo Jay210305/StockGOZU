@@ -23,4 +23,9 @@ public class MovimientoInventarioController {
         List<MovimientoInventario> movimientos = service.obtenerMovimientosPorProducto(productoId, sucursalId);
         return ResponseEntity.ok(movimientos);
     }
+    @GetMapping("/historial") // http://localhost:8081/api/movimientos/historial
+    public ResponseEntity<List<MovimientoInventario>> obtenerHistorialCompleto() {
+        List<MovimientoInventario> historial = service.obtenerHistorialCompleto();
+        return ResponseEntity.ok(historial);
+    }
 }

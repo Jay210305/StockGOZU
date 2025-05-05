@@ -21,4 +21,7 @@ public class MovimientoInventarioService {
         }
         return repository.findByProductoId(productoId);
     }
+    public List<MovimientoInventario> obtenerHistorialCompleto() {
+        return repository.findAllByOrderByFechaDesc();
+    }
 }
