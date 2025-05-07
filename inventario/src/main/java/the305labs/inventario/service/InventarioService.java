@@ -40,9 +40,6 @@ public class InventarioService {
     }
 
     public List<Inventario> listarAlertas(Integer umbral) {
-        return invRepo.findAll()
-                .stream()
-                .filter(i -> i.getCantidad() <= umbral)
-                .collect(Collectors.toList());
+        return invRepo.findByCantidadLessThanEqual(umbral); // ✅ Consulta parametrizada
     }
 }
