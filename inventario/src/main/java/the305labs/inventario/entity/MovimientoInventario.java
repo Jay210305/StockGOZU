@@ -108,5 +108,5 @@ public class MovimientoInventario {
         this.comentario = comentario;
     }
 
-    // getters y setters...
+
 }

@@ -25,11 +25,39 @@ public class InventarioService {
 
     @Transactional
     public MovimientoInventario registrarMovimiento(MovimientoInventario mov) {
-        if (mov.getSucursalId() == null || mov.getProductoId() == null || mov.getCantidad() == null) {
-            throw new IllegalArgumentException("Sucursal, producto y cantidad son obligatorios");
+        if (mov.getSucursalId() == null || mov.getProductoId() == null || mov.getCantidad() == null || mov.getTipo() == null) {
+            throw new IllegalArgumentException("Sucursal, producto, cantidad y tipo son obligatorios");
         }
-        return movRepo.save(mov);
+
+        // Obtener la clave compuesta
+        InventarioPK pk = new InventarioPK(mov.getSucursalId(), mov.getProductoId());
+
+        // Buscar el inventario correspondiente o crearlo si no existe
+        Inventario inventario = invRepo.findById(pk).orElseGet(() -> {
+            Inventario nuevo = new Inventario();
+            nuevo.setSucursalId(mov.getSucursalId());
+            nuevo.setProductoId(mov.getProductoId());
+            nuevo.setCantidad(0); // stock inicial
+            return nuevo;
+        });
+
+        // Actualizar el stock según el tipo de movimiento
+        int nuevaCantidad = inventario.getCantidad();
+        if (mov.getTipo() == MovimientoInventario.Tipo.INGRESO) {
+            nuevaCantidad += mov.getCantidad();
+        } else if (mov.getTipo() == MovimientoInventario.Tipo.SALIDA) {
+            if (mov.getCantidad() > nuevaCantidad) {
+                throw new IllegalArgumentException("No hay suficiente stock para realizar la salida");
+            }
+            nuevaCantidad -= mov.getCantidad();
+        }
+
+        inventario.setCantidad(nuevaCantidad);
+        invRepo.save(inventario); // Guardar cambios en el inventario
+
+        return movRepo.save(mov); // Registrar el movimiento
     }
+
 
     public InventarioDTO consultarStock(Integer sucursalId, Long productoId) {
         if (sucursalId == null || productoId == null) {

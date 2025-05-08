@@ -19,7 +19,6 @@ public class InventarioController {
         this.service = service;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/stock/{sucursalId}/{productoId}")
     public ResponseEntity<InventarioDTO> obtenerStock(@PathVariable Integer sucursalId,
                                                       @PathVariable Long productoId) {
@@ -27,14 +26,12 @@ public class InventarioController {
         return ResponseEntity.ok(dto);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/stockbajo")
     public ResponseEntity<List<InventarioDTO>> obtenerStockBajo(@RequestParam(defaultValue = "0") Integer umbral) {
         List<InventarioDTO> productosBajoStock = service.listarAlertas(umbral);
         return ResponseEntity.ok(productosBajoStock);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @PostMapping("/movimiento")
     public ResponseEntity<MovimientoInventario> registrarMovimiento(
             @Valid @RequestBody MovimientoInventario movimiento) {
@@ -42,7 +39,6 @@ public class InventarioController {
         return ResponseEntity.ok(saved);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/alertas")
     public ResponseEntity<List<InventarioDTO>> alertasStock(
             @RequestParam(defaultValue = "0") Integer umbral) {
