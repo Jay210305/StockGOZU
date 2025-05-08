@@ -9,6 +9,6 @@ archivo war: https://drive.google.com/file/d/1c-YwFujEMoYTAooHNk0pZ0ljrA6b24Py/v
 >http://localhost:8081/login
 
 > [!IMPORTANT]
-> Username: pepe2
-> Password: pepe
+> Username: jay
+> Password: admin
 
