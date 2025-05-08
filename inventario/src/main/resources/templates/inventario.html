@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestión de Inventario</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .container { width: 90%; max-width: 900px; margin: 0 auto; }
+    h1 { text-align: center; margin-top: 20px; }
+    form { border: 1px solid #ccc; padding: 15px; margin: 20px 0; border-radius: 8px; }
+    form > div { margin-bottom: 10px; }
+    label { display: inline-block; width: 150px; }
+    input, select { padding: 6px; width: calc(100% - 160px); }
+    button { padding: 8px 16px; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+    th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
+    th { background: #f0f0f0; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Gestión de Inventario</h1>
+
+  <!-- 1. Consulta de Stock -->
+  <form id="stockForm">
+    <h3>Consultar Stock</h3>
+    <div>
+      <label for="stkSucursalInput">Sucursal:</label>
+      <input list="sucursalesList" id="stkSucursalInput" placeholder="Escribe para buscar…" required />
+      <datalist id="sucursalesList"></datalist>
+    </div>
+    <div>
+      <label for="stkProducto">Producto ID:</label>
+      <input type="number" id="stkProducto" required />
+    </div>
+    <button type="submit">Consultar</button>
+    <p id="stockResult"></p>
+  </form>
+
+  <!-- 2. Registro de Movimiento -->
+  <form id="movForm">
+    <h3>Registrar Movimiento</h3>
+    <div>
+      <label for="movSucursalInput">Sucursal:</label>
+      <input list="sucursalesList" id="movSucursalInput" placeholder="Escribe para buscar…" required />
+    </div>
+    <div>
+      <label for="movProducto">Producto ID:</label>
+      <input type="number" id="movProducto" required />
+    </div>
+    <div>
+      <label for="movUsuario">Usuario ID:</label>
+      <input type="number" id="movUsuario" required />
+    </div>
+    <div>
+      <label for="movTipo">Tipo:</label>
+      <select id="movTipo">
+        <option value="INGRESO">INGRESO</option>
+        <option value="SALIDA">SALIDA</option>
+      </select>
+    </div>
+    <div>
+      <label for="movCantidad">Cantidad:</label>
+      <input type="number" id="movCantidad" required />
+    </div>
+    <div>
+      <label for="movPrecioCompra">Precio Compra:</label>
+      <input type="number" id="movPrecioCompra" step="0.01" required />
+    </div>
+    <div>
+      <label for="movPrecioVenta">Precio Venta:</label>
+      <input type="number" id="movPrecioVenta" step="0.01" required />
+    </div>
+    <div>
+      <label for="movComentario">Comentario:</label>
+      <input type="text" id="movComentario" />
+    </div>
+    <button type="submit">Registrar</button>
+  </form>
+
+  <!-- 3. Tabla de Inventario -->
+  <h3>Inventario Actual</h3>
+  <table id="inventario-table">
+    <thead>
+    <tr>
+      <th>Sucursal</th>
+      <th>Producto</th>
+      <th>Cantidad</th>
+      <th>Stock Mínimo</th>
+      <th>Última Actualización</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<script>
+  const baseUrl = '/api';
+  let sucursales = [];
+
+  // 0. Carga lista de sucursales y la mete en el datalist
+  function loadSucursales() {
+    fetch(`${baseUrl}/sucursales`)
+      .then(res => res.json())
+      .then(list => {
+        sucursales = list;
+        const dl = document.getElementById('sucursalesList');
+        dl.innerHTML = '';
+        sucursales.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.nombre;
+          dl.appendChild(opt);
+        });
+      });
+  }
+
+  // Helper: busca ID a partir de nombre parcial/exacto
+  function findSucursalIdByName(name) {
+    const lower = name.toLowerCase();
+    const match = sucursales.find(s => s.nombre.toLowerCase().startsWith(lower));
+    return match ? match.id : null;
+  }
+
+  // 1. Consultar stock
+  document.getElementById('stockForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const nombreSucursal = document.getElementById('stkSucursalInput').value;
+    const sucId = findSucursalIdByName(nombreSucursal);
+    if (!sucId) return alert('Sucursal no válida');
+    const prodId = document.getElementById('stkProducto').value;
+    fetch(`${baseUrl}/inventario/stock/${sucId}/${prodId}`)
+      .then(res => res.ok ? res.json() : Promise.reject('Inventario no encontrado'))
+      .then(inv => {
+        document.getElementById('stockResult').textContent =
+          `Sucursal ${inv.sucursalId} (“${nombreSucursal}”), Producto ${inv.productoId}: ${inv.cantidad} unidades`;
+      })
+      .catch(err => document.getElementById('stockResult').textContent = err);
+  });
+
+  // 2. Registrar movimiento
+  document.getElementById('movForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const sucNombre = document.getElementById('movSucursalInput').value;
+    const sucId = findSucursalIdByName(sucNombre);
+    if (!sucId) return alert('Sucursal no válida');
+    const mov = {
+      sucursalId:   sucId,
+      productoId:   parseInt(document.getElementById('movProducto').value),
+      usuarioId:    parseInt(document.getElementById('movUsuario').value),
+      tipo:         document.getElementById('movTipo').value,
+      cantidad:     parseInt(document.getElementById('movCantidad').value),
+      precioCompra: parseFloat(document.getElementById('movPrecioCompra').value),
+      precioVenta:  parseFloat(document.getElementById('movPrecioVenta').value),
+      comentario:   document.getElementById('movComentario').value
+    };
+    fetch(`${baseUrl}/inventario/movimiento`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mov)
+    })
+    .then(res => res.ok ? res.json() : res.json().then(e=>Promise.reject(e.message)))
+    .then(() => {
+      alert('Movimiento registrado');
+      loadInventario();
+    })
+    .catch(err => alert(`Error: ${err}`));
+  });
+
+  // 3. Tabla de inventario
+  function loadInventario() {
+    // listAll asumido como alertas con umbral alto
+    fetch(`${baseUrl}/inventario/alertas?umbral=999999`)
+      .then(res => res.json())
+      .then(list => {
+        const tbody = document.querySelector('#inventario-table tbody');
+        tbody.innerHTML = '';
+        list.forEach(inv => {
+          const suc = sucursales.find(s => s.id === inv.sucursalId)?.nombre || inv.sucursalId;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${suc}</td>
+            <td>${inv.productoId}</td>
+            <td>${inv.cantidad}</td>
+            <td>${inv.stockMinimo}</td>
+            <td>${inv.actualizadoEn}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSucursales();
+    loadInventario();
+  });
+</script>
+</body>
+</html>

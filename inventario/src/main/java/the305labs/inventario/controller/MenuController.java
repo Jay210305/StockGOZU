@@ -1,6 +1,5 @@
 package the305labs.inventario.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,18 +10,19 @@ import java.util.List;
 @Controller
 public class MenuController {
 
-    @GetMapping("/menu")
+    @GetMapping({"/", "/menu"})
     public String mostrarMenu(Model model) {
         List<MenuItem> menuItems = List.of(
-                new MenuItem("Inicio", "/inicio"),
+                new MenuItem("Inicio",    "/inicio"),
                 new MenuItem("Productos", "/productos"),
-                new MenuItem("Usuarios", "/usuarios"),
-                new MenuItem("Sucursales", "/sucursales")
-
+                new MenuItem("Usuarios",  "/usuarios"),
+                new MenuItem("Sucursales","/sucursales"),
+                new MenuItem("Inventario","/inventario")    // <-- Nuevo
         );
         model.addAttribute("menuItems", menuItems);
         return "menu";
     }
+
     @GetMapping("/inicio")
     public String redirigirInicio() {
         return "inicio";
@@ -31,11 +31,6 @@ public class MenuController {
     @GetMapping("/productos")
     public String redirigirProductos() {
         return "productos";
-    }
-
-    @GetMapping("/")
-    public String redirigirAMenu() {
-        return "inicio";
     }
 
     @GetMapping("/usuarios")
@@ -48,5 +43,9 @@ public class MenuController {
         return "sucursales";
     }
 
-
+    // Nuevo mapping para inventario
+    @GetMapping("/inventario")
+    public String redirigirInventario() {
+        return "inventario";
+    }
 }
