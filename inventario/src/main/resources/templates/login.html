@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Iniciar Sesión</title>
+    <link rel="icon" href="/images/logoS.png" type="image/png">
+
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -20,7 +22,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        h2 {
+        h2 { /* Modificado a solo h2 */
             text-align: center;
             color: #444;
         }
@@ -63,10 +65,18 @@
             text-align: center;
             margin-top: 15px;
         }
+
+        .logo {
+            display: block;
+            margin: 0 auto 30px;
+            max-width: 400px;
+        }
     </style>
 </head>
 <body>
 <div class="login-container">
+    <img src="/images/logo.png" alt="Logo de StockGOZU" class="logo">
+
     <h2>Iniciar Sesión</h2>
     <form th:action="@{/login}" method="post">
         <label for="username">Usuario:</label>

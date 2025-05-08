@@ -4,7 +4,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import the305labs.inventario.entity.Inventario;
 
+import java.time.LocalDateTime;
+
 public class InventarioDTO {
+    private LocalDateTime actualizadoEn;
+    public LocalDateTime getActualizadoEn() {
+        return actualizadoEn;
+    }
+
+    public void setActualizadoEn(LocalDateTime actualizadoEn) {
+        this.actualizadoEn = actualizadoEn;
+    }
 
     @NotNull(message = "Sucursal ID is required")
     private Integer sucursalId;
@@ -71,6 +81,7 @@ public class InventarioDTO {
         dto.setProductoId(inv.getProductoId());
         dto.setCantidad(inv.getCantidad());
         dto.setStockMinimo(inv.getStockMinimo());
+        dto.setActualizadoEn(inv.getActualizadoEn());
         return dto;
     }
 }

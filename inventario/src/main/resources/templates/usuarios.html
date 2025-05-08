@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Usuarios</title>
+  <link rel="icon" href="/images/logoS.png" type="image/png">
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f4f4f4;
-    }
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+            color: #333;
+        }
 
     h1 {
       text-align: center;
@@ -22,7 +25,7 @@
     button {
       padding: 10px 20px;
       margin: 5px;
-      background-color: #3498db;
+      background-color: #007BFF;
       color: white;
       border: none;
       border-radius: 5px;
@@ -46,7 +49,7 @@
     }
 
     th {
-      background-color: #3498db;
+      background-color: #007BFF;
       color: white;
     }
 
@@ -96,20 +99,7 @@
   </tr>
   </thead>
   <tbody>
-  <!-- Si quieres usar Thymeleaf directo -->
-  <!--
-  <tr th:each="usuario : ${usuarios}">
-    <td th:text="${usuario.id}"></td>
-    <td th:text="${usuario.nombre}"></td>
-    <td th:text="${usuario.username}"></td>
-    <td th:text="${usuario.rol}"></td>
-    <td th:text="${usuario.creadoEn}"></td>
-    <td>
-      <button th:attr="onclick=|editUsuario(${usuario.id})|">Editar</button>
-      <button th:attr="onclick=|deleteUsuario(${usuario.id})|">Eliminar</button>
-    </td>
-  </tr>
-  -->
+
   </tbody>
 </table>
 
@@ -196,7 +186,7 @@
   function addUsuario() {
     const nombre = document.getElementById("nombre").value.trim();
     const username = document.getElementById("username").value.trim();
-    const passwordHash = document.getElementById("password").value.trim();
+    const password = document.getElementById("password").value.trim();
     const rol = document.getElementById("rol").value;
 
     if (!nombre || !username || !password) {
@@ -207,7 +197,7 @@
     fetch("/api/usuarios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombre, username, passwordHash, rol })
+      body: JSON.stringify({ nombre, username, password, rol })
     })
     .then(response => {
       if (!response.ok) throw new Error("No se pudo crear el usuario.");

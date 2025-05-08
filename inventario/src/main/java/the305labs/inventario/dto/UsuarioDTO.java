@@ -16,7 +16,7 @@ public class UsuarioDTO {
     private String username;
 
     @NotBlank(message = "La contraseña es obligatoria")
-    @Size(min = 8, message = "La contraseña debe tener al menos 8 caracteres")
+    @Size(min = 5, message = "La contraseña debe tener al menos 5 caracteres")
     private String password;
 
     @NotNull(message = "El rol es obligatorio")

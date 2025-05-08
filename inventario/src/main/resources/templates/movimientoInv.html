@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Movimientos</title>
+    <link rel="icon" href="/images/logoS.png" type="image/png">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 1400px;
+            padding: 30px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            overflow: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            display: block;
+            overflow-x: auto;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Historial de Movimientos de Inventario</h1>
+    <table id="historial-table">
+        <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Sucursal</th>
+            <th>Producto</th>
+            <th>Tipo</th>
+            <th>Cantidad</th>
+            <th>Precio Compra</th>
+            <th>Precio Venta</th>
+            <th>Comentario</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <div class="button-container">
+        <a href="/inventario" class="btn">Volver a Inventario</a>
+    </div>
+</div>
+
+<script>
+    const baseUrl = '/api';
+
+    fetch(`${baseUrl}/inventario/movimientos`)
+        .then(response => response.json())
+        .then(movimientos => {
+            const tableBody = document.querySelector('#historial-table tbody');
+            movimientos.forEach(movimiento => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${new Date(movimiento.fecha).toLocaleString()}</td>
+                    <td>${movimiento.sucursalId}</td>
+                    <td>${movimiento.productoId}</td>
+                    <td>${movimiento.tipo}</td>
+                    <td>${movimiento.cantidad}</td>
+                    <td>${movimiento.precioCompra}</td>
+                    <td>${movimiento.precioVenta}</td>
+                    <td>${movimiento.comentario}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error al obtener el historial de movimientos:', error);
+        });
+</script>
+</body>
+</html>
