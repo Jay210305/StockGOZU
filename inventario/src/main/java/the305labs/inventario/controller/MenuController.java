@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import the305labs.inventario.entity.MenuItem;
 
-
 import java.util.List;
 
 @Controller

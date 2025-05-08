@@ -9,9 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.Valid;
 import java.util.List;
 
-
-
-
 @RestController
 @RequestMapping("/api/productos")
 public class ProductoController {
