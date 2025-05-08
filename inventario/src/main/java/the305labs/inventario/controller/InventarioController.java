@@ -4,6 +4,7 @@ import the305labs.inventario.dto.InventarioDTO;
 import the305labs.inventario.entity.MovimientoInventario;
 import the305labs.inventario.service.InventarioService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ public class InventarioController {
         this.service = service;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/stock/{sucursalId}/{productoId}")
     public ResponseEntity<InventarioDTO> obtenerStock(@PathVariable Integer sucursalId,
                                                       @PathVariable Long productoId) {
@@ -30,6 +32,7 @@ public class InventarioController {
         return ResponseEntity.ok(productosBajoStock);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @PostMapping("/movimiento")
     public ResponseEntity<MovimientoInventario> registrarMovimiento(
             @Valid @RequestBody MovimientoInventario movimiento) {
@@ -37,6 +40,7 @@ public class InventarioController {
         return ResponseEntity.ok(saved);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/alertas")
     public ResponseEntity<List<InventarioDTO>> alertasStock(
             @RequestParam(defaultValue = "0") Integer umbral) {
