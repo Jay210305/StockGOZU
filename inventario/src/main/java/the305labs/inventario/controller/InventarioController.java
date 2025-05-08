@@ -26,6 +26,8 @@ public class InventarioController {
         InventarioDTO dto = service.consultarStock(sucursalId, productoId);
         return ResponseEntity.ok(dto);
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/stockbajo")
     public ResponseEntity<List<InventarioDTO>> obtenerStockBajo(@RequestParam(defaultValue = "0") Integer umbral) {
         List<InventarioDTO> productosBajoStock = service.listarAlertas(umbral);
