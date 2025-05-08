@@ -1,5 +1,6 @@
 package the305labs.inventario.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import the305labs.inventario.dto.SucursalDTO;
 import the305labs.inventario.service.SucursalService;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,13 @@ public class SucursalController {
         this.sucursalService = sucursalService;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping
     public ResponseEntity<List<SucursalDTO>> getAllSucursales() {
         return ResponseEntity.ok(sucursalService.getAllSucursales());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/{id}")
     public ResponseEntity<SucursalDTO> getSucursalById(@PathVariable Integer id) {
         return sucursalService.getSucursalById(id)
@@ -30,11 +33,13 @@ public class SucursalController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<SucursalDTO> createSucursal(@Valid @RequestBody SucursalDTO input) {
         return ResponseEntity.ok(sucursalService.createSucursal(input));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<SucursalDTO> updateSucursal(@PathVariable Integer id,
                                                       @Valid @RequestBody SucursalDTO input) {
@@ -43,6 +48,7 @@ public class SucursalController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSucursal(@PathVariable Integer id) {
         if (sucursalService.deleteSucursal(id)) {

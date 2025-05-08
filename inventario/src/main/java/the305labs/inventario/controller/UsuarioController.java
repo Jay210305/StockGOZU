@@ -1,5 +1,6 @@
 package the305labs.inventario.controller;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import the305labs.inventario.dto.UsuarioDTO;
 import the305labs.inventario.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -18,11 +19,13 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
         return ResponseEntity.ok(usuarioService.getAllUsuarios());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable Integer id) {
         return usuarioService.getUsuarioById(id)
@@ -30,12 +33,14 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<UsuarioDTO> createUsuario(@Valid @RequestBody UsuarioDTO dto) {
         UsuarioDTO created = usuarioService.createUsuario(dto);
         return ResponseEntity.ok(created);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable Integer id,
                                                     @Valid @RequestBody UsuarioDTO dto) {
@@ -44,6 +49,7 @@ public class UsuarioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
         if (usuarioService.deleteUsuario(id)) {
