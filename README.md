@@ -7,7 +7,8 @@ archivo war: https://drive.google.com/file/d/1c-YwFujEMoYTAooHNk0pZ0ljrA6b24Py/v
 > [!IMPORTANT]
 > Acceso al módulo
 >http://localhost:8081/login
+
 > [!IMPORTANT]
-> Username: admin21
-> Password: admin123
+> Username: pepe2
+> Password: pepe
 
