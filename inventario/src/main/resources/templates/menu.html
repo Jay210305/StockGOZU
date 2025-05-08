@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Menú Principal</title>
+    <link rel="icon" href="/images/logoS.png" type="image/png">
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -41,6 +42,35 @@
             color: white;
             font-weight: bold;
         }
+
+        .logout-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .logout-container form {
+            display: inline-block;
+        }
+
+        .logout-container button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-container button:hover {
+            background-color: #c82333;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 30px;
+            max-width: 400px;
+        }
     </style>
 </head>
 <body>
@@ -50,5 +80,13 @@
         <a th:href="@{${item.path}}" th:text="${item.label}"></a>
     </li>
 </ul>
+
+<div class="logout-container">
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Cerrar Sesión</button>
+    </form>
+</div>
+<img src="/images/logo.png" alt="Logo de StockGOZU" class="logo">
+
 </body>
 </html>

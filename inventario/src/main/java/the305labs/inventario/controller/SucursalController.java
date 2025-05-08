@@ -1,59 +1,57 @@
 package the305labs.inventario.controller;
 
-import the305labs.inventario.entity.Sucursal;
+import org.springframework.security.access.prepost.PreAuthorize;
+import the305labs.inventario.dto.SucursalDTO;
 import the305labs.inventario.service.SucursalService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/sucursales")
 public class SucursalController {
 
-    @Autowired
-    private SucursalService sucursalService;
+    private final SucursalService sucursalService;
 
+    public SucursalController(SucursalService sucursalService) {
+        this.sucursalService = sucursalService;
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping
-    public List<Sucursal> getAllSucursales() {
-        return sucursalService.getAllSucursales();
+    public ResponseEntity<List<SucursalDTO>> getAllSucursales() {
+        return ResponseEntity.ok(sucursalService.getAllSucursales());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
     @GetMapping("/{id}")
-    public ResponseEntity<Sucursal> getSucursalById(@PathVariable Integer id) {
-        Sucursal sucursal = sucursalService.getSucursalById(id);
-        if (sucursal != null) {
-            return ResponseEntity.ok(sucursal);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<SucursalDTO> getSucursalById(@PathVariable Integer id) {
+        return sucursalService.getSucursalById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Sucursal> createSucursal(@RequestBody Sucursal input) {
-        input.setCreadoEn(LocalDateTime.now());
-        Sucursal created = sucursalService.createSucursal(input);
-        return ResponseEntity.ok(created);
+    public ResponseEntity<SucursalDTO> createSucursal(@Valid @RequestBody SucursalDTO input) {
+        return ResponseEntity.ok(sucursalService.createSucursal(input));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Sucursal> updateSucursal(@PathVariable Integer id, @RequestBody Sucursal input) {
-        Sucursal updated = sucursalService.updateSucursal(id, input);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<SucursalDTO> updateSucursal(@PathVariable Integer id,
+                                                      @Valid @RequestBody SucursalDTO input) {
+        return sucursalService.updateSucursal(id, input)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSucursal(@PathVariable Integer id) {
-        if (sucursalService.deleteSucursal(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        sucursalService.deleteSucursal(id);
+        return ResponseEntity.noContent().build();
     }
 }

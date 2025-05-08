@@ -3,35 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <title>Gestión de Inventario</title>
+  <link rel="icon" href="/images/logoS.png" type="image/png">
+
   <style>
-    body { font-family: Arial, sans-serif; }
-    .container { width: 90%; max-width: 900px; margin: 0 auto; }
-    h1 { text-align: center; margin-top: 20px; }
-    form { border: 1px solid #ccc; padding: 15px; margin: 20px 0; border-radius: 8px; }
-    form > div { margin-bottom: 10px; }
-    label { display: inline-block; width: 150px; }
-    input, select { padding: 6px; width: calc(100% - 160px); }
-    button { padding: 8px 16px; margin-top: 10px; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-    th, td { border: 1px solid #aaa; padding: 8px; text-align: center; }
-    th { background: #f0f0f0; }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f7fa; }
+    .container { width: 90%; max-width: 900px; margin: 0 auto; padding: 20px; }
+    h1 { text-align: center; margin-top: 20px; color: #333; }
+    form { background-color: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); margin: 20px 0; }
+    form > div { margin-bottom: 15px; }
+    label { display: inline-block; width: 150px; color: #444; font-weight: bold; }
+    input, select, button { padding: 8px; width: calc(100% - 160px); border: 1px solid #ccc; border-radius: 4px; }
+    button { background-color: #007BFF; color: #fff; border: none; cursor: pointer; transition: background-color 0.3s ease; }
+    button:hover { background-color: #3f4f99; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+    th, td { padding: 10px; text-align: center; border: 1px solid #ddd; }
+    th { background-color: #e7e7e7; }
+    tr.low-stock { background-color: #f9e1e1; color: #d32f2f; }
+    p.error { color: #d32f2f; font-weight: bold; text-align: center; }
+    .alert {
+      padding: 15px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+
+    .alert-success {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .alert-error {
+      background-color: #f44336;
+      color: white;
+    }
+
+    /* Estilos del Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.4);
+      padding-top: 60px;
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close-btn:hover, .close-btn:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: bold;
+      margin: 5px;
+    }
+
+    .btn:hover {
+      background-color: #3f4f99;
+    }
   </style>
 </head>
 <body>
 <div class="container">
   <h1>Gestión de Inventario</h1>
-
+  <div class="button-container">
+    <a href="/menu" class="btn">Volver al Menú</a>
+  </div>
   <!-- 1. Consulta de Stock -->
   <form id="stockForm">
     <h3>Consultar Stock</h3>
     <div>
       <label for="stkSucursalInput">Sucursal:</label>
-      <input list="sucursalesList" id="stkSucursalInput" placeholder="Escribe para buscar…" required />
-      <datalist id="sucursalesList"></datalist>
+      <select id="stkSucursalInput" required>
+        <option value="" disabled selected>Selecciona una sucursal</option>
+      </select>
     </div>
     <div>
       <label for="stkProducto">Producto ID:</label>
-      <input type="number" id="stkProducto" required />
+      <select id="stkProducto" required>
+        <option value="" disabled selected>Selecciona un producto</option>
+        <!-- Opciones de productos se cargarán dinámicamente -->
+      </select>
     </div>
     <button type="submit">Consultar</button>
     <p id="stockResult"></p>
@@ -42,15 +124,21 @@
     <h3>Registrar Movimiento</h3>
     <div>
       <label for="movSucursalInput">Sucursal:</label>
-      <input list="sucursalesList" id="movSucursalInput" placeholder="Escribe para buscar…" required />
+      <select id="movSucursalInput" required>
+        <option value="" disabled selected>Selecciona una sucursal</option>
+      </select>
     </div>
     <div>
-      <label for="movProducto">Producto ID:</label>
-      <input type="number" id="movProducto" required />
+      <label for="movProducto">Producto:</label>
+      <select id="movProducto" required>
+        <option value="" disabled selected>Selecciona un producto</option>
+        <!-- Opciones de productos se cargarán dinámicamente -->
+      </select>
     </div>
     <div>
-      <label for="movUsuario">Usuario ID:</label>
-      <input type="number" id="movUsuario" required />
+      <label for="movUsuario">UsuarioID:</label>
+      <input type="text" id="movUsuario" th:value="${IdusuarioActual}" readonly><span th:text="${usuarioActual}" style="margin-left: 10px; font-weight: bold;"></span>
+
     </div>
     <div>
       <label for="movTipo">Tipo:</label>
@@ -92,73 +180,139 @@
     </thead>
     <tbody></tbody>
   </table>
-</div>
 
+  <div id="feedback"></div>
+</div>
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn">&times;</span>
+    <h2>Alertas de Stock Bajo</h2>
+    <div id="modal-body"></div>
+  </div>
+</div>
+<div class="button-container">
+  <a href="/movimientoInv" class="btn">Historial de Movimientos</a>
+</div>
 <script>
+  document.getElementById('stockForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const sucursalSelect = document.getElementById('stkSucursalInput');
+const sucId = parseInt(sucursalSelect.value);
+const nombreSucursal = sucursalSelect.options[sucursalSelect.selectedIndex].text;
+
+  if (!sucId) return alert('Sucursal no válida');
+  const prodId = document.getElementById('stkProducto').value;
+
+  fetch(`${baseUrl}/inventario/stock/${sucId}/${prodId}`)
+  .then(res => res.ok ? res.json() : Promise.reject('Inventario no encontrado'))
+  .then(inv => {
+    // Crear una salida más bonita
+    const stockResult = document.getElementById('stockResult');
+    stockResult.innerHTML = `
+      <div class="alert alert-success">
+        <strong>Resultado de Consulta:</strong><br>
+        <span><strong>Sucursal:</strong> ${nombreSucursal} (ID: ${inv.sucursalId})</span><br>
+        <span><strong>Producto:</strong> ${inv.productoId}</span><br>
+        <span><strong>Cantidad:</strong> ${inv.cantidad} unidades</span>
+      </div>
+    `;
+  })
+  .catch(err => {
+    const stockResult = document.getElementById('stockResult');
+    stockResult.innerHTML = `
+      <div class="alert alert-error">
+        <strong>Error:</strong> ${err}
+      </div>
+    `;
+  });
+
+});
+
+
   const baseUrl = '/api';
+  let productos = [];
   let sucursales = [];
 
-  // 0. Carga lista de sucursales y la mete en el datalist
-  function loadSucursales() {
-    fetch(`${baseUrl}/sucursales`)
+  // Cargar lista de productos y sucursales
+  function loadProductos() {
+    fetch(`${baseUrl}/productos`)
       .then(res => res.json())
       .then(list => {
-        sucursales = list;
-        const dl = document.getElementById('sucursalesList');
-        dl.innerHTML = '';
-        sucursales.forEach(s => {
-          const opt = document.createElement('option');
-          opt.value = s.nombre;
-          dl.appendChild(opt);
+        productos = list;
+        const select = document.getElementById('movProducto');
+        const stkSelect = document.getElementById('stkProducto');
+        productos.forEach(prod => {
+          const option = document.createElement('option');
+          option.value = prod.id;
+          option.textContent = `${prod.nombre} (ID: ${prod.id})`;
+          select.appendChild(option);
+          stkSelect.appendChild(option.cloneNode(true)); // Agregar también al select de stock
         });
       });
   }
 
-  // Helper: busca ID a partir de nombre parcial/exacto
-  function findSucursalIdByName(name) {
-    const lower = name.toLowerCase();
-    const match = sucursales.find(s => s.nombre.toLowerCase().startsWith(lower));
-    return match ? match.id : null;
-  }
+  // Cargar lista de sucursales
+  function loadSucursales() {
+  fetch(`${baseUrl}/sucursales`)
+    .then(res => res.json())
+    .then(list => {
+      sucursales = list;
+      const stkSelect = document.getElementById('stkSucursalInput');
+      const movSelect = document.getElementById('movSucursalInput');
+      [stkSelect, movSelect].forEach(sel => {
+        sel.innerHTML = '<option value="" disabled selected>Selecciona una sucursal</option>';
+        sucursales.forEach(s => {
+          const opt = document.createElement('option');
+          opt.value = s.id;
+          opt.textContent = s.nombre;
+          sel.appendChild(opt);
+        });
+      });
+    });
+}
 
-  // 1. Consultar stock
-  document.getElementById('stockForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const nombreSucursal = document.getElementById('stkSucursalInput').value;
-    const sucId = findSucursalIdByName(nombreSucursal);
-    if (!sucId) return alert('Sucursal no válida');
-    const prodId = document.getElementById('stkProducto').value;
-    fetch(`${baseUrl}/inventario/stock/${sucId}/${prodId}`)
-      .then(res => res.ok ? res.json() : Promise.reject('Inventario no encontrado'))
-      .then(inv => {
-        document.getElementById('stockResult').textContent =
-          `Sucursal ${inv.sucursalId} (“${nombreSucursal}”), Producto ${inv.productoId}: ${inv.cantidad} unidades`;
-      })
-      .catch(err => document.getElementById('stockResult').textContent = err);
+
+  // Obtener el usuario actual (simulamos aquí que el ID del usuario es 1, con nombre 'admin')
+<!--  function setUsuario() {-->
+<!--    const usuarioActual = { id: 1, nombre: 'admin' };-->
+<!--    const inputUsuario = document.getElementById('movUsuario');-->
+<!--    inputUsuario.value = `${usuarioActual.id} - ${usuarioActual.nombre}`;-->
+<!--  }-->
+
+  // Cuando se seleccione un producto, autocompletar precios de compra y venta
+  document.getElementById('movProducto').addEventListener('change', e => {
+    const productoId = e.target.value;
+    const productoSeleccionado = productos.find(p => p.id == productoId);
+    if (productoSeleccionado) {
+      document.getElementById('movPrecioCompra').value = productoSeleccionado.precioCompra;
+      document.getElementById('movPrecioVenta').value = productoSeleccionado.precioVenta;
+    }
   });
 
-  // 2. Registrar movimiento
+  // Enviar el formulario para registrar el movimiento
   document.getElementById('movForm').addEventListener('submit', e => {
     e.preventDefault();
     const sucNombre = document.getElementById('movSucursalInput').value;
-    const sucId = findSucursalIdByName(sucNombre);
+    const sucId = parseInt(document.getElementById('movSucursalInput').value);
     if (!sucId) return alert('Sucursal no válida');
+
     const mov = {
       sucursalId:   sucId,
       productoId:   parseInt(document.getElementById('movProducto').value),
-      usuarioId:    parseInt(document.getElementById('movUsuario').value),
+      usuarioId:    parseInt(document.getElementById('movUsuario').value.split(' ')[0]), // Extraemos solo el ID
       tipo:         document.getElementById('movTipo').value,
       cantidad:     parseInt(document.getElementById('movCantidad').value),
       precioCompra: parseFloat(document.getElementById('movPrecioCompra').value),
       precioVenta:  parseFloat(document.getElementById('movPrecioVenta').value),
       comentario:   document.getElementById('movComentario').value
     };
+
     fetch(`${baseUrl}/inventario/movimiento`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(mov)
     })
-    .then(res => res.ok ? res.json() : res.json().then(e=>Promise.reject(e.message)))
+    .then(res => res.ok ? res.json() : res.json().then(e => Promise.reject(e.message)))
     .then(() => {
       alert('Movimiento registrado');
       loadInventario();
@@ -166,15 +320,22 @@
     .catch(err => alert(`Error: ${err}`));
   });
 
-  // 3. Tabla de inventario
+  // Buscar el ID de sucursal a partir del nombre
+  function findSucursalIdByName(name) {
+    const lower = name.toLowerCase();
+    const match = sucursales.find(s => s.nombre.toLowerCase().startsWith(lower));
+    return match ? match.id : null;
+  }
+
+  // Cargar inventario
   function loadInventario() {
-    // listAll asumido como alertas con umbral alto
     fetch(`${baseUrl}/inventario/alertas?umbral=999999`)
       .then(res => res.json())
       .then(list => {
         const tbody = document.querySelector('#inventario-table tbody');
         tbody.innerHTML = '';
         list.forEach(inv => {
+          console.log(inv);
           const suc = sucursales.find(s => s.id === inv.sucursalId)?.nombre || inv.sucursalId;
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -189,8 +350,60 @@
       });
   }
 
+// Función para obtener productos con stock bajo
+function loadStockBajo() {
+  fetch(`${baseUrl}/inventario/stockbajo?umbral=5`)
+  .then(res => res.json())
+  .then(products => {
+    console.log(products);  // Ver la respuesta del backend en la consola
+    if (products.length > 0) {
+      let modalBody = '';
+      products.forEach(product => {
+        const fechaActualizacion = new Date(product.actualizadoEn).toLocaleString();
+        modalBody += `
+          <p><strong>Producto ID:</strong> ${product.productoId}</p>
+          <p><strong>Sucursal:</strong> ${product.sucursalId}</p>
+          <p><strong>Cantidad:</strong> ${product.cantidad}</p>
+          <p><strong>Stock Mínimo:</strong> ${product.stockMinimo}</p>
+          <p><strong>Última actualización:</strong> ${fechaActualizacion}</p>
+          <hr>
+        `;
+      });
+      document.getElementById('modal-body').innerHTML = modalBody;
+
+      // Mostrar el modal
+      document.getElementById('modal').style.display = 'block';
+    } else {
+      alert('No hay productos con stock bajo.');
+    }
+  })
+  .catch(err => {
+    console.error('Error al obtener stock bajo:', err);
+  });
+
+// Función para cerrar el modal cuando se hace clic en el botón de cerrar
+document.querySelector('.close-btn').addEventListener('click', function() {
+  document.getElementById('modal').style.display = 'none';
+});
+
+// Cerrar el modal si el usuario hace clic fuera del contenido del modal
+window.onclick = function(event) {
+  if (event.target == document.getElementById('modal')) {
+    document.getElementById('modal').style.display = 'none';
+  }
+}
+
+
+}
+
+
+
+
+  // Inicialización al cargar la página
   document.addEventListener('DOMContentLoaded', () => {
     loadSucursales();
+    loadProductos();
+    loadStockBajo();
     loadInventario();
   });
 </script>

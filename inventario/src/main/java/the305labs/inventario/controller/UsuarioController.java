@@ -1,8 +1,9 @@
 package the305labs.inventario.controller;
 
-import the305labs.inventario.entity.Usuario;
+import org.springframework.security.access.prepost.PreAuthorize;
+import the305labs.inventario.dto.UsuarioDTO;
 import the305labs.inventario.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,46 +13,46 @@ import java.util.List;
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
-    public List<Usuario> getAllUsuarios() {
-        return usuarioService.getAllUsuarios();
+    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
+        return ResponseEntity.ok(usuarioService.getAllUsuarios());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
-        Usuario usuario = usuarioService.getUsuarioById(id);
-        if (usuario != null) {
-            return ResponseEntity.ok(usuario);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable Integer id) {
+        return usuarioService.getUsuarioById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario userInput) {
-        Usuario created = usuarioService.createUsuario(userInput);
+    public ResponseEntity<UsuarioDTO> createUsuario(@Valid @RequestBody UsuarioDTO dto) {
+        UsuarioDTO created = usuarioService.createUsuario(dto);
         return ResponseEntity.ok(created);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario userInput) {
-        Usuario updated = usuarioService.updateUsuario(id, userInput);
-        if (updated != null) {
-            return ResponseEntity.ok(updated);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<UsuarioDTO> updateUsuario(@PathVariable Integer id,
+                                                    @Valid @RequestBody UsuarioDTO dto) {
+        return usuarioService.updateUsuario(id, dto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
-        if (usuarioService.deleteUsuario(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
+        usuarioService.deleteUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }
