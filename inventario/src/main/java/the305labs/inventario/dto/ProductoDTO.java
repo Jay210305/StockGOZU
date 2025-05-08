@@ -1,12 +1,9 @@
 package the305labs.inventario.dto;
 
 import jakarta.validation.constraints.*;
-import org.springframework.cglib.core.internal.Function;
-import org.springframework.http.ResponseEntity;
 import the305labs.inventario.entity.Producto;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 public class ProductoDTO {
 
