@@ -1,6 +1,6 @@
 package the305labs.inventario.controller;
 
-import the305labs.inventario.entity.Producto;
+import the305labs.inventario.dto.ProductoDTO;
 import the305labs.inventario.service.ProductoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,45 +12,40 @@ import java.util.List;
 @RequestMapping("/api/productos")
 public class ProductoController {
     private final ProductoService service;
+
     public ProductoController(ProductoService service) {
         this.service = service;
     }
 
     @GetMapping
-    public List<Producto> listar() {
-        return service.listarTodos();
+    public ResponseEntity<List<ProductoDTO>> listar() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> obtener(@PathVariable Long id) {
+    public ResponseEntity<ProductoDTO> obtener(@PathVariable Long id) {
         return service.buscarPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<Producto> crear(@Valid @RequestBody Producto producto) {
-        Producto creado = service.crear(producto);
+    public ResponseEntity<ProductoDTO> crear(@Valid @RequestBody ProductoDTO dto) {
+        ProductoDTO creado = service.crear(dto);
         return ResponseEntity.ok(creado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable Long id,
-                                               @Valid @RequestBody Producto producto) {
-        return service.buscarPorId(id)
-                .map(p -> {
-                    producto.setId(id);
-                    return ResponseEntity.ok(service.actualizar(producto));
-                })
+    public ResponseEntity<ProductoDTO> actualizar(@PathVariable Long id,
+                                                  @Valid @RequestBody ProductoDTO dto) {
+        return service.actualizar(id, dto)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (service.buscarPorId(id).isPresent()) {
-            service.eliminar(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        service.eliminar(id);
+        return ResponseEntity.noContent().build();
     }
 }

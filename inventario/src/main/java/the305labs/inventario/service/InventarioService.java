@@ -1,10 +1,11 @@
 package the305labs.inventario.service;
 
-import the305labs.inventario.entity.MovimientoInventario;
+import the305labs.inventario.dto.InventarioDTO;
 import the305labs.inventario.entity.Inventario;
 import the305labs.inventario.entity.InventarioPK;
-import the305labs.inventario.repository.MovimientoInventarioRepository;
+import the305labs.inventario.entity.MovimientoInventario;
 import the305labs.inventario.repository.InventarioRepository;
+import the305labs.inventario.repository.MovimientoInventarioRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,33 +17,33 @@ public class InventarioService {
     private final InventarioRepository invRepo;
     private final MovimientoInventarioRepository movRepo;
 
-    public InventarioService(InventarioRepository invRepo, MovimientoInventarioRepository movRepo) {
-        this.invRepo = invRepo;
-        this.movRepo = movRepo;
+    public InventarioService(InventarioRepository invRepo,
+                             MovimientoInventarioRepository movRepo) {
+        this.invRepo     = invRepo;
+        this.movRepo     = movRepo;
     }
 
     @Transactional
     public MovimientoInventario registrarMovimiento(MovimientoInventario mov) {
-        // El trigger DB validará stock negativo
-        MovimientoInventario saved = movRepo.save(mov);
-        // El trigger DB actualizará automáticamente tabla inventario
-        return saved;
+        return movRepo.save(mov);
     }
 
-    public Inventario consultarStock(Integer sucursalId, Long productoId) {
+    public InventarioDTO consultarStock(Integer sucursalId, Long productoId) {
         InventarioPK pk = new InventarioPK(sucursalId, productoId);
-        return invRepo.findById(pk).orElseGet(() -> {
-            Inventario inv = new Inventario();
-            inv.setSucursalId(sucursalId);
-            inv.setProductoId(productoId);
-            return invRepo.save(inv);
-        });
+        Inventario inv = invRepo.findById(pk)
+                .orElseGet(() -> {
+                    Inventario nuevo = new Inventario();
+                    nuevo.setSucursalId(sucursalId);
+                    nuevo.setProductoId(productoId);
+                    return invRepo.save(nuevo);
+                });
+        return InventarioDTO.fromEntity(inv);
     }
 
-    public List<Inventario> listarAlertas(Integer umbral) {
-        return invRepo.findAll()
-                .stream()
-                .filter(i -> i.getCantidad() <= umbral)
+    public List<InventarioDTO> listarAlertas(Integer umbral) {
+        return invRepo.findAll().stream()
+                .map(InventarioDTO::fromEntity)
+                .filter(dto -> dto.getCantidad() <= umbral)
                 .collect(Collectors.toList());
     }
 }
