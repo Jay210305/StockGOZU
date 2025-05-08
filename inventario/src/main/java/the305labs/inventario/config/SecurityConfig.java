@@ -23,14 +23,14 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/logout", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/login", "/logout","/images/**", "/css/**", "/js/**").permitAll()
                         .anyRequest().authenticated()
                 )
-
                 .formLogin(form -> form
                         .loginPage("/login")
                         .permitAll()
                 )
+                .httpBasic(Customizer.withDefaults())
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
@@ -38,10 +38,19 @@ public class SecurityConfig {
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                 )
+                .csrf(csrf -> csrf.disable())
+                .headers(headers -> headers
+                        .cacheControl(cacheControl -> cacheControl
+                                .disable()) // Deshabilitar el control de caché
+                )
+                .sessionManagement(session -> session
+                        .sessionFixation().none()
+                );
 
-                .csrf(AbstractHttpConfigurer::disable); // Disable CSRF for non-browser clients
         return http.build();
     }
+
+
 
     @Bean
     public DaoAuthenticationProvider authProvider() {

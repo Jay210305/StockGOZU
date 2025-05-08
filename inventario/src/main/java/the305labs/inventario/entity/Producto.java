@@ -36,6 +36,10 @@ public class Producto {
     @Column(name = "actualizado_en")
     private LocalDateTime actualizadoEn;
 
+    @ManyToOne
+    @JoinColumn(name = "sucursal_id") // Asegúrate de que la columna se llame 'sucursal_id'
+    private Sucursal sucursal;
+
     @PrePersist @PreUpdate
     public void setTimestamp() {
         actualizadoEn = LocalDateTime.now();

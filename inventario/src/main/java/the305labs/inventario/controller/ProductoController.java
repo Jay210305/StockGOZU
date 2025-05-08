@@ -28,7 +28,10 @@ public class ProductoController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
+    @GetMapping("/sucursal/{id}")
+    public ResponseEntity<List<ProductoDTO>> getProductosBySucursal(@PathVariable Integer id) {
+        return ResponseEntity.ok(service.listarPorSucursal(id));
+    }
     @PostMapping
     public ResponseEntity<ProductoDTO> crear(@Valid @RequestBody ProductoDTO dto) {
         ProductoDTO creado = service.crear(dto);
