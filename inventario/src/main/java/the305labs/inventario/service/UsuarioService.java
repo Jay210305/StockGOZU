@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -29,21 +30,36 @@ public class UsuarioService {
     }
 
     public Optional<UsuarioDTO> getUsuarioById(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El ID del usuario es obligatorio");
+        }
         return usuarioRepository.findById(Long.valueOf(id))
                 .map(UsuarioDTO::fromEntity);
     }
 
     public UsuarioDTO createUsuario(UsuarioDTO dto) {
-        if (usuarioRepository.findByUsername(dto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("El username ya está en uso");
+        if (dto == null) {
+            throw new IllegalArgumentException("Los datos del usuario son obligatorios");
         }
-        // Convierte DTO a entidad codificando la contraseña
+        if (dto.getUsername() == null || dto.getUsername().isBlank()) {
+            throw new IllegalArgumentException("El nombre de usuario es obligatorio");
+        }
+        if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+            throw new IllegalArgumentException("La contraseña es obligatoria");
+        }
+        if (usuarioRepository.findByUsername(dto.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("El nombre de usuario ya está en uso");
+        }
+
         Usuario entity = dto.toEntity(passwordEncoder);
         Usuario saved  = usuarioRepository.save(entity);
         return UsuarioDTO.fromEntity(saved);
     }
 
     public Optional<UsuarioDTO> updateUsuario(Integer id, UsuarioDTO dto) {
+        if (id == null || dto == null) {
+            throw new IllegalArgumentException("ID y datos del usuario son obligatorios");
+        }
         return usuarioRepository.findById(Long.valueOf(id)).map(existing -> {
             existing.setNombre(dto.getNombre());
             existing.setUsername(dto.getUsername());
@@ -56,11 +72,14 @@ public class UsuarioService {
         });
     }
 
-    public boolean deleteUsuario(Integer id) {
-        if (usuarioRepository.existsById(Long.valueOf(id))) {
-            usuarioRepository.deleteById(Long.valueOf(id));
-            return true;
+    public void deleteUsuario(Integer id) {
+        if (id == null) {
+            throw new IllegalArgumentException("El ID del usuario es obligatorio");
         }
-        return false;
+        Long longId = Long.valueOf(id);
+        if (!usuarioRepository.existsById(longId)) {
+            throw new NoSuchElementException("Usuario no encontrado con ID " + id);
+        }
+        usuarioRepository.deleteById(longId);
     }
 }

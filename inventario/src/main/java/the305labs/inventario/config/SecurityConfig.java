@@ -2,6 +2,7 @@ package the305labs.inventario.config;
 
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import the305labs.inventario.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,10 +39,9 @@ public class SecurityConfig {
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
                 )
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .headers(headers -> headers
-                        .cacheControl(cacheControl -> cacheControl
-                                .disable()) // Deshabilitar el control de caché
+                        .cacheControl(HeadersConfigurer.CacheControlConfig::disable) // Deshabilitar el control de caché
                 )
                 .sessionManagement(session -> session
                         .sessionFixation().none()

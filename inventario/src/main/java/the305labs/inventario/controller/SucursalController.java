@@ -51,10 +51,7 @@ public class SucursalController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSucursal(@PathVariable Integer id) {
-        if (sucursalService.deleteSucursal(id)) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        sucursalService.deleteSucursal(id);
+        return ResponseEntity.noContent().build();
     }
 }

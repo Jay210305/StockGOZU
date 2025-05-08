@@ -52,9 +52,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUsuario(@PathVariable Integer id) {
-        if (usuarioService.deleteUsuario(id)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        usuarioService.deleteUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }
