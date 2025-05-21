@@ -60,4 +60,9 @@ public class ProductoController {
         service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+    @PreAuthorize("hasAnyRole('ADMIN','OPERADOR')")
+    @GetMapping("/buscar")
+    public ResponseEntity<List<ProductoDTO>> buscarProductos(@RequestParam String query) {
+        return ResponseEntity.ok(service.buscarPorCodigoNombreOCategoria(query));
+    }
 }

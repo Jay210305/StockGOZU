@@ -163,11 +163,25 @@
 
 <h1>Gestión de Productos</h1>
 
-<div class="container">
+<!-- <div class="container">
   <div class="form-container">
     <select id="sucursalSelector" onchange="filterBySucursal()">
       <option value="">Todos los productos</option>
     </select>
+  </div> -->
+
+  <div class="form-container">
+    <select id="tipoBusqueda" onchange="cambiarTipoBusqueda()">
+      <option value="sucursal">Buscar por sucursal</option>
+      <option value="codigo">Buscar por código</option>
+      <option value="categoria">Buscar por categoría</option>
+    </select>
+    <span id="busqueda-dinamica">
+      <!-- Aquí se insertará el input o select según la opción -->
+      <select id="sucursalSelector" onchange="buscarProductos()">
+        <option value="">Todos los productos</option>
+      </select>
+    </span>
   </div>
 
   <div class="button-container">
@@ -210,6 +224,8 @@
       </select>
       <input type="number" id="precioCompra" placeholder="Precio de Compra" />
       <input type="number" id="precioVenta" placeholder="Precio de Venta" />
+      <!-- stock inicial -->
+      <input type="number" id="stockInicial" placeholder="Stock Inicial" min="0"  />
       <button onclick="addProduct()">Añadir Producto</button>
       <button class="cancel" onclick="closePopup()">Cancelar</button>
     </div>
@@ -246,6 +262,8 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // Llenar el selector de sucursales
+    cargarSucursales();
+    cargarCategorias();
     fetch("/api/sucursales")
       .then(response => response.json())
       .then(sucursales => {
@@ -271,6 +289,84 @@
         console.error("Error:", error);
       });
   });
+  //busqueda dinamica
+  function cambiarTipoBusqueda() {
+    const tipo = document.getElementById('tipoBusqueda').value;
+    const contenedor = document.getElementById('busqueda-dinamica');
+    if (tipo === 'sucursal') {
+      contenedor.innerHTML = `
+        <select id="sucursalSelector" onchange="buscarProductos()">
+          <option value="">Todos los productos</option>
+        </select>
+      `;
+      cargarSucursales();
+    } else if (tipo === 'codigo') {
+      contenedor.innerHTML = `
+        <input type="text" id="codigoBusqueda" placeholder="Ingrese código" oninput="buscarProductos()" />
+      `;
+    } else if (tipo === 'categoria') {
+      contenedor.innerHTML = `
+        <select id="categoriaSelector" onchange="buscarProductos()">
+          <option value="">Todas las categorías</option>
+        </select>
+      `;
+      cargarCategorias();
+    }
+  }
+  document.addEventListener("DOMContentLoaded", cambiarTipoBusqueda);
+  function cargarSucursales() {
+    fetch("/api/sucursales")
+      .then(response => response.json())
+      .then(sucursales => {
+        const selector = document.getElementById("sucursalSelector");
+        if (selector) {
+          selector.innerHTML = `<option value="">Todos los productos</option>`;
+          sucursales.forEach(sucursal => {
+            const option = document.createElement("option");
+            option.value = sucursal.id;
+            option.textContent = sucursal.nombre;
+            selector.appendChild(option);
+          });
+        }
+      });
+  }
+  function cargarCategorias() {
+    fetch("/api/productos")
+      .then(response => response.json())
+      .then(productos => {
+        const categorias = [...new Set(productos.map(p => p.categoria))].filter(Boolean);
+        const selector = document.getElementById("categoriaSelector");
+        if (selector) {
+          selector.innerHTML = `<option value="">Todas las categorías</option>`;
+          categorias.forEach(cat => {
+            const option = document.createElement("option");
+            option.value = cat;
+            option.textContent = cat;
+            selector.appendChild(option);
+          });
+        }
+      });
+  }
+
+  function buscarProductos() {
+    const tipo = document.getElementById('tipoBusqueda').value;
+    let url = "/api/productos";
+    if (tipo === 'sucursal') {
+      const sucursalId = document.getElementById('sucursalSelector').value;
+      if (sucursalId) url = `/api/productos/sucursal/${sucursalId}`;
+    } else if (tipo === 'codigo') {
+      const codigo = document.getElementById('codigoBusqueda').value.trim();
+      if (codigo) url = `/api/productos/buscar?query=${encodeURIComponent(codigo)}`;
+    } else if (tipo === 'categoria') {
+      const categoria = document.getElementById('categoriaSelector').value;
+      if (categoria) url = `/api/productos/buscar?query=${encodeURIComponent(categoria)}`;
+    }
+    fetch(url)
+      .then(response => response.json())
+      .then(productos => {
+        displayProductos(productos);
+      });
+  }
 
   // Mostrar productos en la tabla
   function displayProductos(productos) {
@@ -332,11 +428,13 @@
     const unidad_medida = document.getElementById('unidad_medida').value;
     const precioCompra = parseFloat(document.getElementById('precioCompra').value);
     const precioVenta = parseFloat(document.getElementById('precioVenta').value);
+    let stockInicial = parseInt(document.getElementById('stockInicial').value);
 
     if (!nombre || !descripcion || !codigo || !categoria || isNaN(precioCompra) || isNaN(precioVenta)) {
       alert("Por favor, rellena todos los campos.");
       return;
     }
+    if (isNaN(stockInicial) || stockInicial < 0) stockInicial = 0;
 
     fetch("/api/productos", {
       method: "POST",

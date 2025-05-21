@@ -4,7 +4,7 @@ import the305labs.inventario.dto.InventarioDTO;
 import the305labs.inventario.entity.MovimientoInventario;
 import the305labs.inventario.service.InventarioService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+// import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
