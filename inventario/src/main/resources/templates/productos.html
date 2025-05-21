@@ -222,8 +222,8 @@
         <option value="caja">caja</option>
         <option value="otro">otro</option>
       </select>
-      <input type="number" id="precioCompra" placeholder="Precio de Compra" />
-      <input type="number" id="precioVenta" placeholder="Precio de Venta" />
+      <input type="number" id="precioCompra" placeholder="Precio de Compra" min="0"/>
+      <input type="number" id="precioVenta" placeholder="Precio de Venta" min="0"/>
       <!-- stock inicial -->
       <input type="number" id="stockInicial" placeholder="Stock Inicial" min="0"  />
       <button onclick="addProduct()">Añadir Producto</button>
@@ -289,6 +289,7 @@
         console.error("Error:", error);
       });
   });
+
   //busqueda dinamica
   function cambiarTipoBusqueda() {
     const tipo = document.getElementById('tipoBusqueda').value;
@@ -419,6 +420,17 @@
   function closePopup() {
     document.getElementById('popupForm').style.display = 'none';
   }
+
+  function preventNegativeInput(id) {
+    const input = document.getElementById(id);
+    input.addEventListener("input", () => {
+      if (parseFloat(input.value) < 0) {
+        input.value = "";
+        alert("No se permiten valores negativos en este campo.");
+      }
+    });
+  }
+  ["precioCompra", "precioVenta", "stockInicial"].forEach(preventNegativeInput);
 
   function addProduct() {
     const nombre = document.getElementById('nombre').value;
