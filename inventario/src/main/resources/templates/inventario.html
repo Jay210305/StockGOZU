@@ -329,21 +329,25 @@
 
   // Enviar el formulario para registrar el movimiento
   document.getElementById('movForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const sucNombre = document.getElementById('movSucursalInput').value;
-    const sucId = parseInt(document.getElementById('movSucursalInput').value);
-    if (!sucId) return alert('Sucursal no válida');
+      e.preventDefault();
+      const cantidad = parseInt(document.getElementById('movCantidad').value);
+      const precioC = parseFloat(document.getElementById('movPrecioCompra').value);
+      const precioV = parseFloat(document.getElementById('movPrecioVenta').value);
+      if (cantidad < 0) return alert('La cantidad no puede ser negativa');
+      if (precioC < 0.01) return alert('El precio de compra debe ser al menos 0.01');
+      if (precioV < 0.01) return alert('El precio de venta debe ser al menos 0.01');
 
-    const mov = {
-      sucursalId:   sucId,
-      productoId:   parseInt(document.getElementById('movProducto').value),
-      usuarioId:    parseInt(document.getElementById('movUsuario').value.split(' ')[0]), // Extraemos solo el ID
-      tipo:         document.getElementById('movTipo').value,
-      cantidad:     parseInt(document.getElementById('movCantidad').value),
-      precioCompra: parseFloat(document.getElementById('movPrecioCompra').value),
-      precioVenta:  parseFloat(document.getElementById('movPrecioVenta').value),
-      comentario:   document.getElementById('movComentario').value
-    };
+      // Construir objeto movimiento
+      const mov = {
+          sucursalId: parseInt(document.getElementById('movSucursalInput').value),
+          productoId: parseInt(document.getElementById('movProducto').value),
+          usuarioId: parseInt(document.getElementById('movUsuario').value.split(' ')[0]),
+          tipo: document.getElementById('movTipo').value,
+          cantidad: cantidad,
+          precioCompra: precioC,
+          precioVenta: precioV,
+          comentario: document.getElementById('movComentario').value
+      };
 
     fetch(`${baseUrl}/inventario/movimiento`, {
       method: 'POST',
