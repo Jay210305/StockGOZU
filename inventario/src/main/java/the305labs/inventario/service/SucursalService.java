@@ -73,13 +73,10 @@ public class SucursalService {
     }
 
     public void deleteSucursal(Integer id) {
-        if (id == null) {
-            throw new IllegalArgumentException("El ID de sucursal es obligatorio");
-        }
-        if (!sucursalRepository.existsById(id)) {
-            throw new NoSuchElementException("Sucursal no encontrada con ID " + id);
-        }
-        sucursalRepository.deleteById(id);
+        Sucursal s = sucursalRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new NoSuchElementException("No existe sucursal " + id));
+        s.setActive(false);
+        sucursalRepository.save(s);
     }
 
 }

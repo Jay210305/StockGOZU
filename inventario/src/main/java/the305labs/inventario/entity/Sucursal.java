@@ -17,6 +17,17 @@ public class Sucursal {
     @Column(name = "creado_en")
     private LocalDateTime creadoEn = LocalDateTime.now();
 
+    @Column(name = "active")
+    private boolean active = true;
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public Integer getId() {
         return id;
     }
