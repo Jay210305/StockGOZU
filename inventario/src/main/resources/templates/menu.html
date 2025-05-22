@@ -24,7 +24,7 @@
             margin: 40px auto;
         }
 
-        ul.menu li {
+        /* ul.menu li {
             background-color: #007BFF;
             margin: 10px 0;
             padding: 12px 20px;
@@ -38,10 +38,37 @@
         }
 
         ul.menu li a {
+            display: block;
+            width: 100%;
+            height: 100%;
             text-decoration: none;
             color: white;
             font-weight: bold;
+        } */
+        ul.menu li {
+            margin: 10px 0;
+            border-radius: 8px;
+            overflow: hidden;
         }
+
+        ul.menu li a {
+            display: block;
+            width: 100%;
+            padding: 12px 0;
+            background-color: #007BFF;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        ul.menu li a:hover {
+            background-color: #0056b3;
+        }
+
 
         .logout-container {
             text-align: center;
