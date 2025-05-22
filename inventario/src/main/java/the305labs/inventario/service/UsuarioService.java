@@ -20,7 +20,7 @@ public class UsuarioService {
     public UsuarioService(UsuarioRepository usuarioRepository,
                           PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder    = passwordEncoder;
     }
 
     public List<UsuarioDTO> getAllUsuarios() {
@@ -52,7 +52,7 @@ public class UsuarioService {
         }
 
         Usuario entity = dto.toEntity(passwordEncoder);
-        Usuario saved = usuarioRepository.save(entity);
+        Usuario saved  = usuarioRepository.save(entity);
         return UsuarioDTO.fromEntity(saved);
     }
 
@@ -73,10 +73,13 @@ public class UsuarioService {
     }
 
     public void deleteUsuario(Integer id) {
-        if (id == null) throw new IllegalArgumentException("El ID del usuario es obligatorio");
-        Usuario u = usuarioRepository.findById(Long.valueOf(id))
-                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado con ID " + id));
-        u.setActive(false);
-        usuarioRepository.save(u);
+        if (id == null) {
+            throw new IllegalArgumentException("El ID del usuario es obligatorio");
+        }
+        Long longId = Long.valueOf(id);
+        if (!usuarioRepository.existsById(longId)) {
+            throw new NoSuchElementException("Usuario no encontrado con ID " + id);
+        }
+        usuarioRepository.deleteById(longId);
     }
 }

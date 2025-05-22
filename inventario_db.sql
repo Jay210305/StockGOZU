@@ -1,15 +1,13 @@
-CREATE DATABASE  IF NOT EXISTS `inventario_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `inventario_db`;
--- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.42, for Linux (x86_64)
 --
 -- Host: localhost    Database: inventario_db
 -- ------------------------------------------------------
--- Server version	8.0.42
+-- Server version	8.0.42-0ubuntu0.24.10.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -99,13 +97,13 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `prevent_negative_stock` BEFORE INSERT ON `movimiento_inventario` FOR EACH ROW BEGIN
   DECLARE current_stock INT;
 
-  -- Get current stock for the product/branch
+  
   SELECT cantidad INTO current_stock
   FROM inventario
   WHERE sucursal_id = NEW.sucursal_id
     AND producto_id = NEW.producto_id;
 
-  -- Block SALIDA if stock would go negative
+  
   IF NEW.tipo = 'SALIDA' AND (current_stock - NEW.cantidad) < 0 THEN
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = 'Insufficient stock for this operation';
@@ -166,8 +164,12 @@ CREATE TABLE `producto` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `codigo` (`codigo`),
   KEY `FKairo81aonoew8q2rx9qmoh43m` (`sucursal_id`),
-  CONSTRAINT `FKairo81aonoew8q2rx9qmoh43m` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursal` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  CONSTRAINT `FKairo81aonoew8q2rx9qmoh43m` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursal` (`id`),
+  CONSTRAINT `check_categoria` CHECK ((regexp_replace(`categoria`,_utf8mb4'[^a-zA-Z]+$',_utf8mb4'') = `categoria`)),
+  CONSTRAINT `check_codigo` CHECK ((regexp_replace(`codigo`,_utf8mb4'[^a-zA-Z]+$',_utf8mb4'') = `codigo`)),
+  CONSTRAINT `check_desc` CHECK ((regexp_replace(`descripcion`,_utf8mb4'[^a-zA-Z]+$',_utf8mb4'') = `descripcion`)),
+  CONSTRAINT `check_nombre` CHECK ((regexp_replace(`nombre`,_utf8mb4'[^a-zA-Z]+$',_utf8mb4'') = `nombre`))
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -176,7 +178,7 @@ CREATE TABLE `producto` (
 
 LOCK TABLES `producto` WRITE;
 /*!40000 ALTER TABLE `producto` DISABLE KEYS */;
-INSERT INTO `producto` VALUES (1,'Test_Product','-','TST-123','Test','unidad',17,18,NULL,'2025-05-08 04:39:27',NULL);
+INSERT INTO `producto` VALUES (1,'Test','Test','Test','Test','unidad',17,18,NULL,'2025-05-22 12:14:52',NULL),(6,'pan','a','aa','q','kg',1,185,NULL,'2025-05-22 12:44:25',NULL);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -192,6 +194,7 @@ CREATE TABLE `sucursal` (
   `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ubicacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -202,7 +205,7 @@ CREATE TABLE `sucursal` (
 
 LOCK TABLES `sucursal` WRITE;
 /*!40000 ALTER TABLE `sucursal` DISABLE KEYS */;
-INSERT INTO `sucursal` VALUES (1,'Cato','Catositio','2025-05-08 03:25:00');
+INSERT INTO `sucursal` VALUES (1,'Cato','Catositio','2025-05-08 03:25:00',1);
 /*!40000 ALTER TABLE `sucursal` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,8 +225,10 @@ CREATE TABLE `usuario` (
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `username` (`username`),
+  CONSTRAINT `check_nombreUser` CHECK ((regexp_replace(`nombre`,_utf8mb4'[^a-zA-Z]+$',_utf8mb4'') = `nombre`)),
+  CONSTRAINT `check_usr` CHECK ((regexp_replace(`username`,_utf8mb4'[^a-zA-Z]+$',_utf8mb4'') = `username`))
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,17 +237,9 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (3,'pepe','pepe2','$2a$10$1ov17YcTVy7cfb3f.27LyOhkhCFlOXDza4bvdUVvVN4cnyRU.ZsFu','ADMIN','2025-05-08 03:37:31',1),(4,'alonso','Jay','$2a$10$FsWmfJWu0qrxpxz554moy.Wd28DQ2wMO7dv2OAxp9hNi1PkH6SP0a','ADMIN','2025-05-08 07:56:09',1),(5,'robo','robert','$2a$10$1N0iCG0zYFbNZ0ZZ6A5YX.6jTec80UZDViN51MXx4vbXNmULPnqlW','OPERADOR','2025-05-22 16:36:56',0),(8,'pedro','pedro','$2a$10$UMmNKHwxbatL8APnRv9tQeIQ4b.DjWTQTxYxP61o5VyiTU.shGipy','OPERADOR','2025-05-22 16:45:38',0);
+INSERT INTO `usuario` VALUES (3,'pepe','pepedos','$2a$10$1ov17YcTVy7cfb3f.27LyOhkhCFlOXDza4bvdUVvVN4cnyRU.ZsFu','ADMIN','2025-05-08 03:37:31',0),(4,'alonso','Jay','$2a$10$FsWmfJWu0qrxpxz554moy.Wd28DQ2wMO7dv2OAxp9hNi1PkH6SP0a','ADMIN','2025-05-08 07:56:09',1),(5,'robo','robert','$2a$10$1N0iCG0zYFbNZ0ZZ6A5YX.6jTec80UZDViN51MXx4vbXNmULPnqlW','OPERADOR','2025-05-22 16:36:56',0),(8,'pedro','pedro','$2a$10$UMmNKHwxbatL8APnRv9tQeIQ4b.DjWTQTxYxP61o5VyiTU.shGipy','OPERADOR','2025-05-22 16:45:38',0),(9,'pedro','paco','$2a$10$Qd59fMbC.Ii7W0irD2guX.DNWz4fa96cL2c3xi7wduA32njgXePJO','OPERADOR','2025-05-22 12:21:23',0),(10,'juan','juan','$2a$10$DECCE/jwb8kzpdVwAPzJ8.yn5TUJsmhofKzGXN3RaGqXYqsSZ4wCq','OPERADOR','2025-05-22 12:21:39',1),(11,'hola','hola','$2a$10$5H2eJDtmL6e.f6vCFrtAeOACQNKUI1NecbtxpeRuRjQ/VnQvXo3tm','OPERADOR','2025-05-22 12:23:02',0),(14,'rico','rico','$2a$10$twW7YeuxiSqWOJ5869c5p.lZU6KBVlVdXh2DmGQennwAkxKLHjqfK','OPERADOR','2025-05-22 12:35:36',1);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping events for database 'inventario_db'
---
-
---
--- Dumping routines for database 'inventario_db'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -253,4 +250,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-22 11:58:17
+-- Dump completed on 2025-05-22  7:49:13
