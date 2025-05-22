@@ -2,6 +2,7 @@ package the305labs.inventario.dto;
 
 import the305labs.inventario.entity.Usuario;
 import jakarta.validation.constraints.*;
+
 import java.time.LocalDateTime;
 
 public class UsuarioDTO {
@@ -15,7 +16,6 @@ public class UsuarioDTO {
     @Size(min = 4, max = 20, message = "El username debe tener entre 4 y 20 caracteres")
     private String username;
 
-    @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 5, message = "La contraseña debe tener al menos 5 caracteres")
     private String password;
 
@@ -23,6 +23,8 @@ public class UsuarioDTO {
     private Usuario.Rol rol;
 
     private LocalDateTime creadoEn;
+
+    private boolean active;
 
     public Integer getId() {
         return id;
@@ -72,14 +74,25 @@ public class UsuarioDTO {
         this.creadoEn = creadoEn;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public Usuario toEntity(org.springframework.security.crypto.password.PasswordEncoder encoder) {
         Usuario u = new Usuario();
         if (this.id != null) u.setId(this.id);
         u.setNombre(this.nombre);
         u.setUsername(this.username);
-        u.setPasswordHash(encoder.encode(this.password));
+        if (this.password != null && !this.password.isBlank()) {
+            u.setPasswordHash(encoder.encode(this.password));
+        }
         u.setRol(this.rol);
         u.setCreadoEn(this.creadoEn != null ? this.creadoEn : LocalDateTime.now());
+        u.setActive(this.active);
         return u;
     }
 
@@ -90,6 +103,7 @@ public class UsuarioDTO {
         dto.setUsername(u.getUsername());
         dto.setRol(u.getRol());
         dto.setCreadoEn(u.getCreadoEn());
+        dto.setActive(u.isActive());
         return dto;
     }
 }
