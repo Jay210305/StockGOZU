@@ -17,15 +17,11 @@ public class Usuario {
     private String username;
 
     private String passwordHash;
-
     @Enumerated(EnumType.STRING)
     private Rol rol;
 
     @Column(name = "creado_en")
     private LocalDateTime creadoEn = LocalDateTime.now();
-
-    @Column(name = "active", insertable = false, updatable = true)
-    private boolean active = true;
 
     public enum Rol {ADMIN, OPERADOR}
 
@@ -75,13 +71,5 @@ public class Usuario {
 
     public void setCreadoEn(LocalDateTime creadoEn) {
         this.creadoEn = creadoEn;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }
