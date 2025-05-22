@@ -195,20 +195,20 @@
 </div>
 <script>
   document.getElementById('stockForm').addEventListener('submit', e => {
-  e.preventDefault();
-  const sucursalSelect = document.getElementById('stkSucursalInput');
-const sucId = parseInt(sucursalSelect.value);
-const nombreSucursal = sucursalSelect.options[sucursalSelect.selectedIndex].text;
+    e.preventDefault();
+    const sucursalSelect = document.getElementById('stkSucursalInput');
+    const sucId = parseInt(sucursalSelect.value);
+    const nombreSucursal = sucursalSelect.options[sucursalSelect.selectedIndex].text;
 
-  if (!sucId) return alert('Sucursal no válida');
-  const prodId = document.getElementById('stkProducto').value;
+    if (!sucId) return alert('Sucursal no válida');
+    const prodId = document.getElementById('stkProducto').value;
 
-  fetch(`${baseUrl}/inventario/stock/${sucId}/${prodId}`)
-  .then(res => res.ok ? res.json() : Promise.reject('Inventario no encontrado'))
-  .then(inv => {
-    // Crear una salida más bonita
-    const stockResult = document.getElementById('stockResult');
-    stockResult.innerHTML = `
+    fetch(`${baseUrl}/inventario/stock/${sucId}/${prodId}`)
+            .then(res => res.ok ? res.json() : Promise.reject('Inventario no encontrado'))
+            .then(inv => {
+              // Crear una salida más bonita
+              const stockResult = document.getElementById('stockResult');
+              stockResult.innerHTML = `
       <div class="alert alert-success">
         <strong>Resultado de Consulta:</strong><br>
         <span><strong>Sucursal:</strong> ${nombreSucursal} (ID: ${inv.sucursalId})</span><br>
@@ -216,17 +216,17 @@ const nombreSucursal = sucursalSelect.options[sucursalSelect.selectedIndex].text
         <span><strong>Cantidad:</strong> ${inv.cantidad} unidades</span>
       </div>
     `;
-  })
-  .catch(err => {
-    const stockResult = document.getElementById('stockResult');
-    stockResult.innerHTML = `
+            })
+            .catch(err => {
+              const stockResult = document.getElementById('stockResult');
+              stockResult.innerHTML = `
       <div class="alert alert-error">
         <strong>Error:</strong> ${err}
       </div>
     `;
-  });
+            });
 
-});
+  });
 
 
   const baseUrl = '/api';
@@ -236,48 +236,86 @@ const nombreSucursal = sucursalSelect.options[sucursalSelect.selectedIndex].text
   // Cargar lista de productos y sucursales
   function loadProductos() {
     fetch(`${baseUrl}/productos`)
-      .then(res => res.json())
-      .then(list => {
-        productos = list;
-        const select = document.getElementById('movProducto');
-        const stkSelect = document.getElementById('stkProducto');
-        productos.forEach(prod => {
-          const option = document.createElement('option');
-          option.value = prod.id;
-          option.textContent = `${prod.nombre} (ID: ${prod.id})`;
-          select.appendChild(option);
-          stkSelect.appendChild(option.cloneNode(true)); // Agregar también al select de stock
-        });
-      });
+            .then(res => res.json())
+            .then(list => {
+              productos = list;
+              const select = document.getElementById('movProducto');
+              const stkSelect = document.getElementById('stkProducto');
+              productos.forEach(prod => {
+                const option = document.createElement('option');
+                option.value = prod.id;
+                option.textContent = `${prod.nombre} (ID: ${prod.id})`;
+                select.appendChild(option);
+                stkSelect.appendChild(option.cloneNode(true)); // Agregar también al select de stock
+              });
+            });
   }
 
+
   // Cargar lista de sucursales
+  // function loadSucursales() {
+  // fetch(`${baseUrl}/sucursales`)
+  //   .then(res => res.json())
+  //   .then(list => {
+  //     sucursales = list;
+  //     const stkSelect = document.getElementById('stkSucursalInput');
+  //     const movSelect = document.getElementById('movSucursalInput');
+  //     [stkSelect, movSelect].forEach(sel => {
+  //       sel.innerHTML = '<option value="" disabled selected>Selecciona una sucursal</option>';
+  //       sucursales.forEach(s => {
+  //         const opt = document.createElement('option');
+  //         opt.value = s.id;
+  //         opt.textContent = s.nombre;
+  //         sel.appendChild(opt);
+  //       });
+  //     });
+  //   });
+  // }
+
   function loadSucursales() {
-  fetch(`${baseUrl}/sucursales`)
-    .then(res => res.json())
-    .then(list => {
-      sucursales = list;
-      const stkSelect = document.getElementById('stkSucursalInput');
-      const movSelect = document.getElementById('movSucursalInput');
-      [stkSelect, movSelect].forEach(sel => {
-        sel.innerHTML = '<option value="" disabled selected>Selecciona una sucursal</option>';
-        sucursales.forEach(s => {
-          const opt = document.createElement('option');
-          opt.value = s.id;
-          opt.textContent = s.nombre;
-          sel.appendChild(opt);
-        });
-      });
-    });
-}
+    fetch(`${baseUrl}/sucursales`)
+            .then(res => res.json())
+            .then(list => {
+              sucursales = list;
+              const stkSelect = document.getElementById('stkSucursalInput');
+              const movSelect = document.getElementById('movSucursalInput');
+              [stkSelect, movSelect].forEach(sel => {
+                sel.innerHTML = '<option value="" disabled selected>Selecciona una sucursal</option>';
+                list.forEach(suc => {
+                  const option = document.createElement('option');
+                  option.value = suc.id;
+                  option.textContent = suc.nombre;
+                  sel.appendChild(option);
+                });
+              });
+
+              // Evento para cargar productos solo de la sucursal seleccionada en consulta de stock
+              stkSelect.addEventListener('change', function() {
+                const sucId = this.value;
+                const prodSelect = document.getElementById('stkProducto');
+                prodSelect.innerHTML = '<option value="" disabled selected>Selecciona un producto</option>';
+                if (!sucId) return; // Si no hay sucursal, deja vacío
+                fetch(`${baseUrl}/productos/sucursal/${sucId}`)
+                        .then(res => res.json())
+                        .then(productosSucursal => {
+                          productosSucursal.forEach(prod => {
+                            const option = document.createElement('option');
+                            option.value = prod.id;
+                            option.textContent = `${prod.nombre} (ID: ${prod.id})`;
+                            prodSelect.appendChild(option);
+                          });
+                        });
+              });
+            });
+  }
 
 
   // Obtener el usuario actual (simulamos aquí que el ID del usuario es 1, con nombre 'admin')
-<!--  function setUsuario() {-->
-<!--    const usuarioActual = { id: 1, nombre: 'admin' };-->
-<!--    const inputUsuario = document.getElementById('movUsuario');-->
-<!--    inputUsuario.value = `${usuarioActual.id} - ${usuarioActual.nombre}`;-->
-<!--  }-->
+  // <!--  function setUsuario() {-->
+  // <!--    const usuarioActual = { id: 1, nombre: 'admin' };-->
+  // <!--    const inputUsuario = document.getElementById('movUsuario');-->
+  // <!--    inputUsuario.value = `${usuarioActual.id} - ${usuarioActual.nombre}`;-->
+  // <!--  }-->
 
   // Cuando se seleccione un producto, autocompletar precios de compra y venta
   document.getElementById('movProducto').addEventListener('change', e => {
@@ -312,12 +350,12 @@ const nombreSucursal = sucursalSelect.options[sucursalSelect.selectedIndex].text
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(mov)
     })
-    .then(res => res.ok ? res.json() : res.json().then(e => Promise.reject(e.message)))
-    .then(() => {
-      alert('Movimiento registrado');
-      loadInventario();
-    })
-    .catch(err => alert(`Error: ${err}`));
+            .then(res => res.ok ? res.json() : res.json().then(e => Promise.reject(e.message)))
+            .then(() => {
+              alert('Movimiento registrado');
+              loadInventario();
+            })
+            .catch(err => alert(`Error: ${err}`));
   });
 
   // Buscar el ID de sucursal a partir del nombre
@@ -330,37 +368,37 @@ const nombreSucursal = sucursalSelect.options[sucursalSelect.selectedIndex].text
   // Cargar inventario
   function loadInventario() {
     fetch(`${baseUrl}/inventario/alertas?umbral=999999`)
-      .then(res => res.json())
-      .then(list => {
-        const tbody = document.querySelector('#inventario-table tbody');
-        tbody.innerHTML = '';
-        list.forEach(inv => {
-          console.log(inv);
-          const suc = sucursales.find(s => s.id === inv.sucursalId)?.nombre || inv.sucursalId;
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
+            .then(res => res.json())
+            .then(list => {
+              const tbody = document.querySelector('#inventario-table tbody');
+              tbody.innerHTML = '';
+              list.forEach(inv => {
+                console.log(inv);
+                const suc = sucursales.find(s => s.id === inv.sucursalId)?.nombre || inv.sucursalId;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
             <td>${suc}</td>
             <td>${inv.productoId}</td>
             <td>${inv.cantidad}</td>
             <td>${inv.stockMinimo}</td>
             <td>${inv.actualizadoEn}</td>
           `;
-          tbody.appendChild(tr);
-        });
-      });
+                tbody.appendChild(tr);
+              });
+            });
   }
 
-// Función para obtener productos con stock bajo
-function loadStockBajo() {
-  fetch(`${baseUrl}/inventario/stockbajo?umbral=5`)
-  .then(res => res.json())
-  .then(products => {
-    console.log(products);  // Ver la respuesta del backend en la consola
-    if (products.length > 0) {
-      let modalBody = '';
-      products.forEach(product => {
-        const fechaActualizacion = new Date(product.actualizadoEn).toLocaleString();
-        modalBody += `
+  // Función para obtener productos con stock bajo
+  function loadStockBajo() {
+    fetch(`${baseUrl}/inventario/stockbajo?umbral=5`)
+            .then(res => res.json())
+            .then(products => {
+              console.log(products);  // Ver la respuesta del backend en la consola
+              if (products.length > 0) {
+                let modalBody = '';
+                products.forEach(product => {
+                  const fechaActualizacion = new Date(product.actualizadoEn).toLocaleString();
+                  modalBody += `
           <p><strong>Producto ID:</strong> ${product.productoId}</p>
           <p><strong>Sucursal:</strong> ${product.sucursalId}</p>
           <p><strong>Cantidad:</strong> ${product.cantidad}</p>
@@ -368,36 +406,33 @@ function loadStockBajo() {
           <p><strong>Última actualización:</strong> ${fechaActualizacion}</p>
           <hr>
         `;
-      });
-      document.getElementById('modal-body').innerHTML = modalBody;
+                });
+                document.getElementById('modal-body').innerHTML = modalBody;
 
-      // Mostrar el modal
-      document.getElementById('modal').style.display = 'block';
-    } else {
-      alert('No hay productos con stock bajo.');
-    }
-  })
-  .catch(err => {
-    console.error('Error al obtener stock bajo:', err);
-  });
+                // Mostrar el modal
+                document.getElementById('modal').style.display = 'block';
+              } else {
+                alert('No hay productos con stock bajo.');
+              }
+            })
+            .catch(err => {
+              console.error('Error al obtener stock bajo:', err);
+            });
 
 // Función para cerrar el modal cuando se hace clic en el botón de cerrar
-document.querySelector('.close-btn').addEventListener('click', function() {
-  document.getElementById('modal').style.display = 'none';
-});
+    document.querySelector('.close-btn').addEventListener('click', function() {
+      document.getElementById('modal').style.display = 'none';
+    });
 
 // Cerrar el modal si el usuario hace clic fuera del contenido del modal
-window.onclick = function(event) {
-  if (event.target == document.getElementById('modal')) {
-    document.getElementById('modal').style.display = 'none';
+    window.onclick = function(event) {
+      if (event.target == document.getElementById('modal')) {
+        document.getElementById('modal').style.display = 'none';
+      }
+    }
+
+
   }
-}
-
-
-}
-
-
-
 
   // Inicialización al cargar la página
   document.addEventListener('DOMContentLoaded', () => {

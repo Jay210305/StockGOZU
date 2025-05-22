@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 public class ProductoDTO {
 
+    @Null(message = "El id no debe proporcionarse al crear un producto")
     private Long id;
 
     @NotBlank(message = "El nombre es obligatorio")
@@ -26,14 +27,17 @@ public class ProductoDTO {
     private Producto.Unidad unidadMedida;
 
     @NotNull(message = "El precio de compra es obligatorio")
-    @DecimalMin(value = "0.01", message = "El precio de compra debe ser al menos 0.01")
+    @DecimalMin(value = "0.01", inclusive = true, message = "El precio de compra debe ser al menos 0.01")
     private Double precioCompra;
 
     @NotNull(message = "El precio de venta es obligatorio")
-    @DecimalMin(value = "0.01", message = "El precio de venta debe ser al menos 0.01")
+    @DecimalMin(value = "0.01", inclusive = true, message = "El precio de venta debe ser al menos 0.01")
     private Double precioVenta;
 
+    @PastOrPresent(message = "La fecha de creación no puede ser futura")
     private LocalDateTime creadoEn;
+
+    @PastOrPresent(message = "La fecha de actualización no puede ser futura")
     private LocalDateTime actualizadoEn;
 
     public ProductoDTO() {}

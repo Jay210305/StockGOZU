@@ -76,6 +76,21 @@ public class ProductoService {
         });
     }
 
+    public List<ProductoDTO> buscarPorCodigoNombreOCategoria(String query) {
+        if (query == null || query.isBlank()) {
+            return listarTodos();
+        }
+        String q = query.toLowerCase();
+        return repo.findAll().stream()
+                .filter(p ->
+                        (p.getCodigo() != null && p.getCodigo().toLowerCase().contains(q)) ||
+                                (p.getNombre() != null && p.getNombre().toLowerCase().contains(q)) ||
+                                (p.getCategoria() != null && p.getCategoria().toLowerCase().contains(q))
+                )
+                .map(ProductoDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
     public void eliminar(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("El ID de producto es obligatorio");

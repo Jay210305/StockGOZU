@@ -1,8 +1,5 @@
 package the305labs.inventario.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-
 public class MenuItem {
     private String label;
     private String path;
