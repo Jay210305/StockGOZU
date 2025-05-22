@@ -44,7 +44,7 @@ CREATE TABLE `inventario` (
 
 LOCK TABLES `inventario` WRITE;
 /*!40000 ALTER TABLE `inventario` DISABLE KEYS */;
-INSERT INTO `inventario` VALUES (1,1,8,0,'2025-05-08 17:15:20'),(1,3,2,0,'2025-05-22 14:41:24');
+INSERT INTO `inventario` VALUES (1,1,12,0,'2025-05-08 01:01:30');
 /*!40000 ALTER TABLE `inventario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -60,12 +60,12 @@ CREATE TABLE `movimiento_inventario` (
   `sucursal_id` int NOT NULL,
   `producto_id` bigint NOT NULL,
   `usuario_id` int NOT NULL,
-  `tipo` enum('INGRESO','SALIDA') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo` enum('INGRESO','SALIDA') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `cantidad` int NOT NULL,
   `precio_compra` double DEFAULT NULL,
   `precio_venta` double DEFAULT NULL,
   `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `comentario` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comentario` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `producto_id` (`producto_id`),
   KEY `usuario_id` (`usuario_id`),
@@ -75,7 +75,7 @@ CREATE TABLE `movimiento_inventario` (
   CONSTRAINT `movimiento_inventario_ibfk_1` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursal` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `movimiento_inventario_ibfk_2` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `movimiento_inventario_ibfk_3` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -84,7 +84,7 @@ CREATE TABLE `movimiento_inventario` (
 
 LOCK TABLES `movimiento_inventario` WRITE;
 /*!40000 ALTER TABLE `movimiento_inventario` DISABLE KEYS */;
-INSERT INTO `movimiento_inventario` VALUES (1,1,1,3,'INGRESO',12,18,19,'2025-05-08 00:58:12','prueba 1'),(2,1,1,3,'INGRESO',12,18,19,'2025-05-08 01:01:31','prueba'),(3,1,1,3,'SALIDA',4,17,18,'2025-05-08 12:15:21',''),(4,2,1,3,'INGRESO',2,17,18,'2025-05-08 12:17:35',''),(5,1,3,4,'INGRESO',-1,15,16,'2025-05-22 08:45:29',''),(6,1,3,4,'INGRESO',3,15,16,'2025-05-22 08:45:49',''),(7,1,3,4,'INGRESO',-2,15,16,'2025-05-22 08:46:38',''),(8,1,3,4,'INGRESO',2,15,16,'2025-05-22 08:46:46',''),(9,1,3,4,'INGRESO',-2,15,16,'2025-05-22 09:25:07',''),(10,1,3,4,'INGRESO',2,15,16,'2025-05-22 09:29:03',''),(11,1,3,4,'INGRESO',1,15,16,'2025-05-22 09:41:24','');
+INSERT INTO `movimiento_inventario` VALUES (1,1,1,3,'INGRESO',12,18,19,'2025-05-08 00:58:12','prueba 1'),(2,1,1,3,'INGRESO',12,18,19,'2025-05-08 01:01:31','prueba');
 /*!40000 ALTER TABLE `movimiento_inventario` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -153,11 +153,11 @@ DROP TABLE IF EXISTS `producto`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `producto` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `descripcion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `codigo` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `categoria` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `unidad_medida` enum('kg','litro','unidad','metro','caja','otro') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unidad',
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `descripcion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `codigo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `categoria` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `unidad_medida` enum('kg','litro','unidad','metro','caja','otro') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unidad',
   `precio_compra` double DEFAULT NULL,
   `precio_venta` double DEFAULT NULL,
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -167,7 +167,7 @@ CREATE TABLE `producto` (
   UNIQUE KEY `codigo` (`codigo`),
   KEY `FKairo81aonoew8q2rx9qmoh43m` (`sucursal_id`),
   CONSTRAINT `FKairo81aonoew8q2rx9qmoh43m` FOREIGN KEY (`sucursal_id`) REFERENCES `sucursal` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -176,7 +176,7 @@ CREATE TABLE `producto` (
 
 LOCK TABLES `producto` WRITE;
 /*!40000 ALTER TABLE `producto` DISABLE KEYS */;
-INSERT INTO `producto` VALUES (1,'Test_Product','-','TST-123','Test','unidad',17,18,NULL,'2025-05-08 04:39:27',NULL),(2,'prueba','prueba','prueba','prueba','kg',1,2,NULL,'2025-05-08 17:19:52',NULL),(3,'test_product','test','tst_1','test','otro',15,16,NULL,'2025-05-22 13:44:12',NULL);
+INSERT INTO `producto` VALUES (1,'Test_Product','-','TST-123','Test','unidad',17,18,NULL,'2025-05-08 04:39:27',NULL);
 /*!40000 ALTER TABLE `producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -189,11 +189,11 @@ DROP TABLE IF EXISTS `sucursal`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `sucursal` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ubicacion` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ubicacion` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -202,7 +202,7 @@ CREATE TABLE `sucursal` (
 
 LOCK TABLES `sucursal` WRITE;
 /*!40000 ALTER TABLE `sucursal` DISABLE KEYS */;
-INSERT INTO `sucursal` VALUES (1,'Cato','Catositio','2025-05-08 03:25:00'),(2,'sucursal 2','ubi 2','2025-05-08 17:17:02');
+INSERT INTO `sucursal` VALUES (1,'Cato','Catositio','2025-05-08 03:25:00');
 /*!40000 ALTER TABLE `sucursal` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -215,15 +215,15 @@ DROP TABLE IF EXISTS `usuario`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `usuario` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password_hash` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `rol` enum('ADMIN','OPERADOR') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'OPERADOR',
+  `nombre` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rol` enum('ADMIN','OPERADOR') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'OPERADOR',
   `creado_en` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `active` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -232,7 +232,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (3,'pepe','pepe2','$2a$10$1ov17YcTVy7cfb3f.27LyOhkhCFlOXDza4bvdUVvVN4cnyRU.ZsFu','ADMIN','2025-05-08 03:37:31',1),(4,'alonso','Jay','$2a$10$FsWmfJWu0qrxpxz554moy.Wd28DQ2wMO7dv2OAxp9hNi1PkH6SP0a','ADMIN','2025-05-08 07:56:09',1);
+INSERT INTO `usuario` VALUES (3,'pepe','pepe2','$2a$10$1ov17YcTVy7cfb3f.27LyOhkhCFlOXDza4bvdUVvVN4cnyRU.ZsFu','ADMIN','2025-05-08 03:37:31',1),(4,'alonso','Jay','$2a$10$FsWmfJWu0qrxpxz554moy.Wd28DQ2wMO7dv2OAxp9hNi1PkH6SP0a','ADMIN','2025-05-08 07:56:09',1),(5,'robo','robert','$2a$10$1N0iCG0zYFbNZ0ZZ6A5YX.6jTec80UZDViN51MXx4vbXNmULPnqlW','OPERADOR','2025-05-22 16:36:56',0),(8,'pedro','pedro','$2a$10$UMmNKHwxbatL8APnRv9tQeIQ4b.DjWTQTxYxP61o5VyiTU.shGipy','OPERADOR','2025-05-22 16:45:38',0);
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -253,4 +253,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-22 10:01:58
+-- Dump completed on 2025-05-22 11:58:17
